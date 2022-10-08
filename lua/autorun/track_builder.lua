@@ -2,35 +2,56 @@ AddCSLuaFile()
 
 local meta_Spline =
 	{
-		S = Vector(),
-		E = Vector(),
-		CP = 1,
-		ControlPoints = {}
+		__call = function(self)
+			self.S = Vector()
+			self.E = Vector()
+			self.CP = 1
+			self.ControlPoints = {}			
+		end,
+
+		__index = {
+
+		}
 	}
 
 local meta_SplineManager =
 	{
-		Splines = {},
+		__call = function(self)
+			self.Splines = {}
+			print("im alive")
+		end,
 
-		CreateSpline = function(self, spline)
-			table.insert(self.Splines, setmetatable(spline, meta_Spline))
-		end
+		__index = {
+			CreateSpline = function(self, spline)
+				table.insert(self.Splines, setmetatable(spline, meta_Spline))
+			end
+		}
 	}
 
 local meta_TrackBuilder =
 	{
-		Thinking = false,
-		Rendering = false,
-		ThinkManager = function(self)
-			if self.Thinking then self:Think() end
-			if self.Rendering then self:Render() end
+		__call = function(self)
+			self.Thinking = false
+			self.Rendering = false
+			self.SplineManager = setmetatable({}, meta_SplineManager); self.SplineManager();
+			hook.Add("PostDrawOpaqueRenderables", "Track Builder - Render Context", function() self:ThinkManager() end)
 		end,
-		Think = function(self)
-			print("Thinking")
-		end,
-		Render = function(self)
-			print("Rendering")
-		end
+
+		__index = {
+			ThinkManager = function(self)
+				if self.Thinking then self:Think() end
+				if self.Rendering then self:Render() end
+			end,
+			Think = function(self)
+				print("Thinking")
+			end,
+			Render = function(self)
+				print("Rendering")
+			end,
+			StartBuilding = function(self)
+				--build.
+			end
+		}
 	}
 
 
@@ -40,8 +61,7 @@ if CLIENT then
 
 	----------CREATE TRACK BUILDER----------
 
-		local TrackBuilder = setmetatable({}, { __index = meta_TrackBuilder })
-		hook.Add("PostDrawOpaqueRenderables", "Track Builder - Render Context", function() TrackBuilder:ThinkManager() end)
+		local TrackBuilder = setmetatable({}, meta_TrackBuilder); TrackBuilder()
 
 	---------END CREATE TRACK BUILDER-------
 
@@ -51,6 +71,11 @@ if CLIENT then
 
 
 	---------PLAYER COMMANDS---------
+
+		local function StartBuilding(pl, cmd, arg)
+			TrackBuilder:StartBuilding()
+		end
+		concommand.Add("StartBuilding", StartBuilding)
 
 		local function Toggle_Rendering(pl, cmd, arg)
 			TrackBuilder.Rendering = !TrackBuilder.Rendering
