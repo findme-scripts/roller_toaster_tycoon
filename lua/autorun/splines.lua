@@ -39,10 +39,8 @@ Splines =
 
 
 	__SplineCall = function(self, controlpoints)
-		print("Setting up new spline.")
 		self.ControlPoints = controlpoints || {}
 		self.t = 0
-		self.SplinePos = Vector()
 	end,
 
 	__SplineIndex = {
