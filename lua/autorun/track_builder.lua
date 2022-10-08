@@ -17,13 +17,14 @@ local meta_Spline =
 local meta_SplineManager =
 	{
 		__call = function(self)
-			self.Splines = {}
+			self.All = {}
 			print("im alive")
 		end,
 
 		__index = {
 			New = function(self, spline)
-				table.insert(self.Splines, setmetatable(spline, meta_Spline))
+				table.insert(self.All, setmetatable(spline, meta_Spline))
+				self.Current = self.All[#self.All]
 			end
 		}
 	}
@@ -31,25 +32,28 @@ local meta_SplineManager =
 local meta_TrackBuilder =
 	{
 		__call = function(self)
-			self.Thinking = false
-			self.Rendering = false
-			self.SplineManager = setmetatable({}, meta_SplineManager); self.SplineManager();
+			self.Building = false
+			self.Splines = setmetatable({}, meta_SplineManager); self.Splines();
 			hook.Add("PostDrawOpaqueRenderables", "Track Builder - Render Context", function() self:ThinkManager() end)
 		end,
 
 		__index = {
 			ThinkManager = function(self)
-				if self.Thinking then self:Think() end
-				if self.Rendering then self:Render() end
-			end,
-			Think = function(self)
-				print("Thinking")
-			end,
-			Render = function(self)
-				print("Rendering")
+				if self.Building then self:BuildThink() self:BuildRender() end
 			end,
 			StartBuilding = function(self)
-				--build.
+				self.Building = true
+				self.Start = LocalPlayer():GetPos()
+				--self.Splines:New(self.Start, self.End)
+			end,
+			BuildThink = function(self)
+				local tr = LocalPlayer():GetEyeTraceNoCursor()
+				self.End = tr.HitPos
+			end,
+			BuildRender = function(self)
+				render.SetColorMaterial()
+				render.DrawSphere( self.Start, 1, 8, 8, color_white)
+				render.DrawSphere( self.End, 1, 8, 8, color_white)
 			end
 		}
 	}
@@ -77,15 +81,10 @@ if CLIENT then
 		end
 		concommand.Add("StartBuilding", StartBuilding)
 
-		local function Toggle_Rendering(pl, cmd, arg)
-			TrackBuilder.Rendering = !TrackBuilder.Rendering
+		local function StopBuilding(pl, cmd, arg)
+			TrackBuilder.Building = false
 		end
-		concommand.Add("ToggleRendering", Toggle_Rendering)
-
-		local function Toggle_Thinking(pl, cmd, arg)
-			TrackBuilder.Thinking = !TrackBuilder.Thinking
-		end
-		concommand.Add("ToggleThinking", Toggle_Thinking)
+		concommand.Add("StopBuilding", StopBuilding)
 
 	--------END PLAYER COMMANDS-------
 
