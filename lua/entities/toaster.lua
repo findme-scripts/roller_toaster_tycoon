@@ -3,7 +3,6 @@ AddCSLuaFile()
 
 DEFINE_BASECLASS( "base_anim" )
 
-ENT.Base = "prop_vehicle_prisoner_pod"
 ENT.PrintName = "toaster"
 ENT.Author = "find me"
 ENT.Information = "sick"
@@ -15,26 +14,33 @@ ENT.AdminOnly = false
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 
 function ENT:Initialize()
-self:SetModel("models/props_phx/carseat2.mdl")
+
 	if ( CLIENT ) then return end
 
-	--self:SetModel("prop_vehicle_prisoner_pod")
-	--self:PhysicsInit(SOLID_VPHYSICS)
-	--self:SetMoveType(MOVETYPE_VPHYSICS)
+	self:SetModel("models/props_junk/sawblade001a.mdl")
+	self:PhysicsInit(SOLID_NONE)
+	self:SetMoveType(MOVETYPE_NONE)
+	self:DrawShadow(false)
 
-	--self:GetPhysicsObject():SetMass(1000)
-	--self:GetPhysicsObject():EnableMotion(true)
+	self.Seat = ents.Create("prop_vehicle_prisoner_pod")
+	self.Seat:SetModel("models/props_phx/carseat2.mdl")
+	self.Seat:SetPos(self:GetPos()+Vector(0, 0, 20))
+	self.Seat:Spawn()
 
-	--self:PhysWake()
+	self.Seat:GetPhysicsObject():EnableMotion(false)
+	self.Seat.Think = function(self)
+		if !IsValid(self:GetPassenger()) then return end
 
+		print("lets ride")
+	end
 
-	--self:DrawShadow(false)
+end
 
-	--local seat = ents.Create("prop_vehicle_prisoner_pod")
-	--seat:SetModel("models/props_phx/carseat2.mdl")
-	--seat:SetPos(self:GetPos())
-	--seat:Spawn()
-
+function ENT:Think()
+	if !IsValid(self.Seat) then return end
+	if !IsValid(self.Seat:GetPassenger(0)) then return end
+	
+	print("let's ride")
 end
 
 
