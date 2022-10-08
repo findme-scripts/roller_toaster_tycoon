@@ -50,6 +50,10 @@ Splines =
 				render.SetColorMaterial()
 				render.DrawSphere(self.ControlPoints[i], 2, 16, 16, color_white)
 			end
+		end,
+
+		Cycle = function(self)
+			
 		end
 
 		
@@ -95,10 +99,17 @@ Splines()
 
 
 ------------TESTING------------
+if !IsValid(LocalPlayer()) then return end
+
+local tr = LocalPlayer():GetEyeTraceNoCursor()
+local pos = LocalPlayer():GetPos()
 
 for i=1, 12 do
-	local spline = Splines:New({LocalPlayer():GetPos()+Vector(0, 0, 20), LocalPlayer():GetPos()+Vector(0, 20, 20)})
-	PrintTable(spline)
+	local StartPos = pos + (tr.HitPos-pos):GetNormal()*(64+i*6) + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-64 + Vector(0, 0, 32)
+	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
+
+	local spline = Splines:New( { StartPos, EndPos } )
+	PrintTable(Splines)
 end
 
 ----------END TESTING----------
