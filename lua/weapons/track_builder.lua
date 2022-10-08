@@ -33,14 +33,6 @@ local MaxExtension = 256
 
 if CLIENT then
 
-	function SWEP:NotDrawing_Think(tr)
-
-	end
-
-	function SWEP:Drawing_Think(tr)
-
-	end
-
 	function SWEP:ToolEffects()
 		local tr = self.Owner:GetEyeTraceNoCursor()
 		local HitPos = self.Owner:GetEyeTraceNoCursor().HitPos
@@ -51,26 +43,17 @@ if CLIENT then
 		end
 
 		if !Drawing then
-			self:NotDrawing_Think(tr)
 			--Always Active Indicator
 			render.SetColorMaterial()
-			render.DrawSphere( HitPos, 1, 8, 8, RenderColor)
-
-			render.SetMaterial( Material( "trails/laser" ) )
-			render.DrawBeam( S, S+Vector(0,0,3), 6, 0, 1, RenderColor )
+			render.DrawSphere( HitPos, 24, 8, 8, RenderColor)
 		else
-			self:Drawing_Think(tr)
-			--Draw beam
-			render.SetMaterial( Material( "trails/laser" ) )
-			render.DrawBeam( S, S+Vector(0,0,3), 6, 0, 1, RenderColor )
-
 			--StartPos Indicator
 			render.SetColorMaterial()
-			render.DrawSphere( S, 1, 8, 8, Color(255, 180, 0))
+			render.DrawSphere( S, 8, 8, 8, Color(255, 180, 0))
 
 			--EndPos Indicator
 			render.SetColorMaterial()
-			render.DrawSphere( HitPos, 1, 8, 8, RenderColor)
+			render.DrawSphere( HitPos, 24, 8, 8, RenderColor)
 		end
 
 		self:DrawSpline()
@@ -114,6 +97,7 @@ function SWEP:Initialize()
 
 		local me = self
 		hook.Add("PostDrawOpaqueRenderables", "I suck", function() me:ToolEffects() end)
+		hook.Add("StartCommand", "eggs", function(pl, cmd) me:PlayerInput(pl, cmd) end)
 
 		self.Audio = CreateSound(self, "ambient/atmosphere/city_rumble_loop1.wav")
 	end
@@ -207,13 +191,13 @@ function SWEP:DrawSpline()
 
 		for l, b in pairs(v.ControlPoints) do
 			render.SetColorMaterial()
-			render.DrawSphere( b, 2, 16, 16, Color(80, 255, 80) )
+			render.DrawSphere( b, 12, 16, 16, Color(80, 255, 80) )
 		end
 
 		v:CycleFull()
 
 		render.SetColorMaterial()
-		render.DrawSphere( v.SplinePos, 2, 16, 16, Color(80, 255, 80) )
+		render.DrawSphere( v.SplinePos, 8, 16, 16, Color(80, 255, 80) )
 
 		if #v.ControlPoints == 2 && self.faking then
 			table.remove(v.ControlPoints, 2)
@@ -264,6 +248,30 @@ end
 
 function SWEP:HUDShouldDraw()
 	return false
+end
+
+function SWEP:PlayerInput(pl, cmd)
+	if ( cmd:GetMouseWheel() != 0 ) then
+		self.WheelInput = cmd:GetMouseWheel()
+	end
+end
+
+function SWEP:CalcView(pl, pos, ang, fov)
+	--if !self.WheelInput then return end
+	if !self.LastZ then self.LastZ = 0 end
+
+	if self.LastZ < 1 then
+		pl:DrawViewModel(true, 0)
+	else
+		pl:DrawViewModel(false, 0)
+	end
+
+	local NewPos = pos+Vector(0, 0, math.Clamp(self.WheelInput*10+self.LastZ, 0, 1024*4))
+	self.LastZ = math.Clamp(self.WheelInput*64+self.LastZ, 0, 1024*4)
+
+	self.WheelInput = 0
+
+	return NewPos, ang, fov
 end
 
 function SWEP:Holster()
