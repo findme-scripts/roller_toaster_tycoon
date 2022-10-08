@@ -90,46 +90,29 @@ Splines =
 
 			return WeightedSum
 
-		end
+		end,
 
---[[
+		--TODO Replace, just testing.
+		AddControlPoints = function(self, num)
+			local Total_ControlPoints = 2+ (num || 0)
+			local S = self.ControlPoints[1]
+			local E = self.ControlPoints[#self.ControlPoints]
+			local Spacing = S:Distance(E)/(Total_ControlPoints-1)
+			local Direction = (E-S); Direction:Normalize();
 
-local function N_Factorial(n)
-	local sum = n
-	for i=1, n-1 do
-		sum = sum*(n-i)
-	end
-	return sum
-end
-
---]]
-
-		--[[Add = function(self)
-			local Total_ControlPoints = self.NumCP+2
-			local Spacing = self.SP:Distance(self.EP)/(Total_ControlPoints-1)
-			local Direction = (self.EP-self.SP); Direction:Normalize();
-
+			self.ControlPoints = {}
 			for i=0, Total_ControlPoints-1 do --(i=0, -1) we steppin back.
-				table.insert(self.ControlPoints, self.SP+Direction*i*Spacing)
+				table.insert(self.ControlPoints, S+Direction*i*Spacing)
+			end
+		end,
+
+		--TODO Replace, just testing.
+		Randomize_MiddleControlPoints = function(self)
+			for i=2, #self.ControlPoints-2 do
+				self.ControlPoints[i] = self.ControlPoints[i] + Vector(0, 0, math.random(-32, 32))
 			end
 		end
 
-		Calc_Spline = function(self)
-			local n = #self.ControlPoints-1
-			local t = self.t
-
-			local WeightedSum = Vector()
-			for i=0, n do --(Bernstein-Bezier Form)
-				local Derive = N_Factorial(n) / ( N_Factorial(i) * N_Factorial(n-i) )
-				if Derive == math.huge then Derive = 1 end
-
-				local weight = Derive * math.pow(t, i) * math.pow( 1-t, (n-i) )
-
-				WeightedSum = WeightedSum + (self.ControlPoints[i+1] * weight)
-			end
-					
-			self.SplinePos = WeightedSum
-		end--]]
 	}
 }
 
@@ -150,10 +133,30 @@ local tr = LocalPlayer():GetEyeTraceNoCursor()
 local pos = LocalPlayer():GetPos()
 
 for i=1, 12 do
-	local StartPos = pos + (tr.HitPos-pos):GetNormal()*(64+i*12) + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-64 + Vector(0, 0, 32)
+	local StartPos = pos + (tr.HitPos-pos):GetNormal()*64 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-64 + Vector(0, 0, 32) + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128*i
 	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
 
 	local spline = Splines:New( { StartPos, EndPos } )
+	spline:AddControlPoints(math.random(0, 9))
+	spline:Randomize_MiddleControlPoints()
+end
+
+for i=1, 12 do
+	local StartPos = pos + (tr.HitPos-pos):GetNormal()*(128+i*24) + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-64 + Vector(0, 0, 32)
+	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
+
+	local spline = Splines:New( { StartPos, EndPos } )
+	spline:AddControlPoints(math.random(0, 9))
+	spline:Randomize_MiddleControlPoints()
+end
+
+for i=1, 12 do
+	local StartPos = pos + (tr.HitPos-pos):GetNormal()*64 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-256 + Vector(0, 0, 32)
+	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
+
+	local spline = Splines:New( { StartPos, EndPos } )
+	spline:AddControlPoints(math.random(0, 9))
+	spline:Randomize_MiddleControlPoints()
 end
 
 ----------END TESTING----------
