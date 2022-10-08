@@ -97,3 +97,33 @@ if SEVER then
 end
 
 --]]
+
+
+
+--[[
+--Jova - Example
+
+local metaTable_Class = {    
+    __tostring = function(self)
+        return ("Class :\n  %s\n  %s"):format(tostring(self.variables[1]), tostring(self.variables[2]))
+    end,
+
+    someFunction = function(self)
+        --
+    end,
+}
+
+metaTable_Class.__index = metaTable_Class
+
+function Class(a, b)
+    local Class = {
+        variables = {
+            a,
+            b
+        }
+    }
+    
+    return setmetatable( Class, metaTable_Class )
+end
+
+--]]
