@@ -22,7 +22,7 @@ local meta_SplineManager =
 		end,
 
 		__index = {
-			CreateSpline = function(self, spline)
+			New = function(self, spline)
 				table.insert(self.Splines, setmetatable(spline, meta_Spline))
 			end
 		}
