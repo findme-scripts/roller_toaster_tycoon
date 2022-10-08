@@ -41,23 +41,70 @@ Splines =
 	__SplineCall = function(self, controlpoints)
 		print("Setting up new spline.")
 		self.ControlPoints = controlpoints || {}
+		self.t = 0
+		self.SplinePos = Vector()
 	end,
 
 	__SplineIndex = {
 
 		Render = function(self)
+			render.SetColorMaterial()
+
 			for i=1, #self.ControlPoints do
-				render.SetColorMaterial()
 				render.DrawSphere(self.ControlPoints[i], 2, 16, 16, color_white)
 			end
+
+			self:Cycle()
 		end,
 
 		Cycle = function(self)
-			
+			local TimeStep = 0.001
+
+			if self.t+TimeStep > 1 then
+				self.t = 0
+			else
+				self.t = self.t+TimeStep
+			end
+
+			render.DrawSphere(self:CalcSplinePos(), 1, 16, 16, Color(255, 80, 80))
+		end,
+
+		CalcSplinePos = function(self, int)
+			local n = #self.ControlPoints-1
+			local t = int || self.t
+
+			local function N_Factorial(n)
+				local sum = n
+				for i=1, n-1 do
+					sum = sum*(n-i)
+				end
+				return sum
+			end
+
+			local WeightedSum = Vector()
+			for i=0, n do --(Bernstein-Bezier Form)
+				local Fraction = N_Factorial(n) / ( N_Factorial(i) * N_Factorial(n-i) )
+				if Fraction == math.huge then Fraction = 1 end
+				local weight = Fraction * math.pow(t, i) * math.pow( 1-t, (n-i) )
+
+				WeightedSum = WeightedSum + (self.ControlPoints[i+1] * weight)
+			end
+
+			return WeightedSum
+
 		end
 
-		
+--[[
 
+local function N_Factorial(n)
+	local sum = n
+	for i=1, n-1 do
+		sum = sum*(n-i)
+	end
+	return sum
+end
+
+--]]
 
 		--[[Add = function(self)
 			local Total_ControlPoints = self.NumCP+2
@@ -105,11 +152,10 @@ local tr = LocalPlayer():GetEyeTraceNoCursor()
 local pos = LocalPlayer():GetPos()
 
 for i=1, 12 do
-	local StartPos = pos + (tr.HitPos-pos):GetNormal()*(64+i*6) + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-64 + Vector(0, 0, 32)
+	local StartPos = pos + (tr.HitPos-pos):GetNormal()*(64+i*12) + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-64 + Vector(0, 0, 32)
 	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
 
 	local spline = Splines:New( { StartPos, EndPos } )
-	PrintTable(Splines)
 end
 
 ----------END TESTING----------
