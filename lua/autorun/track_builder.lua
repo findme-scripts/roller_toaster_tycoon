@@ -1,4 +1,4 @@
-AddCSLuaFile()
+--[[AddCSLuaFile()
 
 local meta_Spline =
 	{
@@ -95,3 +95,5 @@ end
 if SEVER then
 
 end
+
+--]]
