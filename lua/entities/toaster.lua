@@ -13,6 +13,12 @@ ENT.Spawnable = true
 ENT.AdminOnly = false
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 
+function ENT:SetupDataTables()
+ 
+	self:NetworkVar( "Bool", 0, "Operating" )
+ 
+ end
+
 function ENT:Initialize()
 
 	if ( CLIENT ) then return end
@@ -26,30 +32,39 @@ function ENT:Initialize()
 	self.Seat:SetModel("models/props_phx/carseat2.mdl")
 	self.Seat:SetPos(self:GetPos()+Vector(0, 0, 20))
 	self.Seat:Spawn()
-
 	self.Seat:GetPhysicsObject():EnableMotion(false)
-	self.Seat.Think = function(self)
-		if !IsValid(self:GetPassenger()) then return end
-
-		print("lets ride")
-	end
 
 end
 
 function ENT:Think()
-	if !IsValid(self.Seat) then return end
-	if !IsValid(self.Seat:GetPassenger(0)) then return end
-	
-	print("let's ride")
-end
+	if CLIENT then return end
 
+	if !IsValid(self.Seat) then return end
+	if IsValid(self.Seat:GetPassenger(0)) then
+		if !self:GetOperating() then
+			self:SetOperating(true)
+		end
+	else
+		if self:GetOperating() then
+			self:SetOperating(false)
+		end
+	end
+end
 
 
 
 if ( SERVER ) then return end -- We do NOT want to execute anything below in this FILE on SERVER
 
+function ENT:GhostRender()
+	print("rrssr")
+end
+
 function ENT:Draw()
 	self:DrawModel()
+
+	if self:GetOperating() then
+		self:GhostRender()
+	end
 
 	--return true
 end
