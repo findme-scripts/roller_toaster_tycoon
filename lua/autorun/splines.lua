@@ -117,7 +117,7 @@ Splines =
 
 		end,
 
-		--TODO Replace, just testing.
+		--TODO Replace, just testing. --THIS HAS CIRCLE CREATE CODE IN IT.
 		AddControlPoints = function(self, num)
 			local Total_ControlPoints = 2+ (num || 0)
 			local S = self.ControlPoints[1]
@@ -126,7 +126,7 @@ Splines =
 			local Direction = (E-S); Direction:Normalize();
 
 			self.ControlPoints = {}
-			for _, Point in pairs(S:ToCircle(1500, 64)) do --for i=0, Total_ControlPoints-1 do --(i=0, -1) we steppin back.
+			for _, Point in pairs(S:ToCircle(800, 64)) do --for i=0, Total_ControlPoints-1 do --(i=0, -1) we steppin back.
 				table.insert(self.ControlPoints, Point)
 			end
 		end,
@@ -192,7 +192,7 @@ for i=1, 0 do
 	spline:Randomize_MiddleControlPoints()
 end
 
-for i=1, 12 do
+for i=1, 0 do
 	local StartPos = pos + (tr.HitPos-pos):GetNormal()*64 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-256 + Vector(0, 0, 32)
 	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
 
@@ -208,3 +208,13 @@ end
 concommand.Add("ToggleRide", ToggleRide)
 
 ----------END TESTING----------
+
+
+
+
+	local StartPos = pos + (tr.HitPos-pos):GetNormal()*1 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-256 + Vector(0, 0, 32)
+	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
+
+	local spline = Splines:New( { StartPos, EndPos } )
+	spline:AddControlPoints(math.random(0, 9))
+	--spline:Randomize_MiddleControlPoints()
