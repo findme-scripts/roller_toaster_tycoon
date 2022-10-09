@@ -171,9 +171,44 @@ Splines()
 ------------TESTING------------
 if !IsValid(LocalPlayer()) then return end
 
-local tr = LocalPlayer():GetEyeTraceNoCursor()
-local pos = LocalPlayer():GetPos()
 
+
+
+
+local function New_RoundTrack()
+	local tr = LocalPlayer():GetEyeTraceNoCursor()
+	local pos = LocalPlayer():GetPos()
+
+	local StartPos = pos + (tr.HitPos-pos):GetNormal()*1 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-256 + Vector(0, 0, 32)
+	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
+
+	local spline = Splines:New( { StartPos, EndPos } )
+	spline:AddControlPoints(math.random(0, 9))
+
+end
+
+New_RoundTrack()
+
+
+
+
+
+
+
+local function ToggleRide(pl, cmd, arg)
+	pl.PUTMEONTHERIDE = !pl.PUTMEONTHERIDE
+end
+concommand.Add("ToggleRide", ToggleRide)
+
+----------END TESTING----------
+
+
+
+
+
+
+
+--[[
 for i=1, 0 do
 	local StartPos = pos + (tr.HitPos-pos):GetNormal()*64 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-64 + Vector(0, 0, 32) + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128*i
 	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
@@ -200,21 +235,4 @@ for i=1, 0 do
 	spline:AddControlPoints(math.random(0, 9))
 	spline:Randomize_MiddleControlPoints()
 end
-
-
-local function ToggleRide(pl, cmd, arg)
-	pl.PUTMEONTHERIDE = !pl.PUTMEONTHERIDE
-end
-concommand.Add("ToggleRide", ToggleRide)
-
-----------END TESTING----------
-
-
-
-
-	local StartPos = pos + (tr.HitPos-pos):GetNormal()*1 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-256 + Vector(0, 0, 32)
-	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
-
-	local spline = Splines:New( { StartPos, EndPos } )
-	spline:AddControlPoints(math.random(0, 9))
-	--spline:Randomize_MiddleControlPoints()
+--]]
