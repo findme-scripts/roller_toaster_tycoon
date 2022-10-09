@@ -1,4 +1,14 @@
 AddCSLuaFile()
+
+local function GoTo_ControlPoint(pl, cmd, arg)
+	if !arg[1] then return end
+
+	local vec = Vector(tonumber(arg[1]), tonumber(arg[2]), tonumber(arg[3]))
+
+	pl:SetPos(vec)
+end
+concommand.Add("GoTo_ControlPoint", GoTo_ControlPoint)
+
 if SERVER then return end
 
 local function BuildSplineViewer()
@@ -39,6 +49,7 @@ local function BuildSplineViewer()
 			for i=1, #ControlPoints do
 				local point = SplineViewer.ControlPointColumn:AddNode( tostring(ControlPoints[i]) )
 				point:SetIcon( "icon16/bullet_blue.png" )
+				point.Vec = ControlPoints[i]
 			end
 
 
@@ -96,8 +107,10 @@ local function BuildSplineViewer()
 	local ControlPointsTree = vgui.Create( "DTree", Container )
 	ControlPointsTree:SetPos(SplineTree:GetWide(), 0)
 	ControlPointsTree:SetSize(280, Container:GetTall())
-	ControlPointsTree.OnNodeSelected = function( selected )
-		--CONTROL POINT SELECTED IN SECOND TREE
+	ControlPointsTree.OnNodeSelected = function( self, selected )
+		local ControlPoint_Pos = selected.Vec
+
+		LocalPlayer():ConCommand("GoTo_ControlPoint "..tostring(ControlPoint_Pos))
 	end
 
 	SplineViewer.ControlPointColumn = ControlPointsTree
