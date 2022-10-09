@@ -254,6 +254,8 @@ function SWEP:PlayerInput(pl, cmd)
 	end
 end
 
+
+--[[
 function SWEP:CalcView(pl, pos, ang, fov)
 	--if !self.WheelInput then return end
 	if !self.LastZ then self.LastZ = 0 end
@@ -271,6 +273,8 @@ function SWEP:CalcView(pl, pos, ang, fov)
 
 	return NewPos, ang, fov
 end
+--]]
+
 
 function SWEP:Holster()
 	if CLIENT then

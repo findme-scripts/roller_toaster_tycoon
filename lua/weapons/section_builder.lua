@@ -19,28 +19,64 @@ SWEP.Secondary.Automatic = falses
 SWEP.Secondary.Ammo = "none"
 SWEP.Category = "Roller Toaster Tycoon"
 
+if SERVER then return end
 
 
-SWEP.Initialize = function()
+SWEP.S = Vector()
+SWEP.E = Vector()
+SWEP.Drawing = false
+
+
+
+
+
+
+SWEP.Initialize = function(self)
+	hook.Add("PostDrawOpaqueRenderables", "Section Builder - Render Context", function() self:RenderContext() end)
+end
+
+SWEP.RenderContext = function(self)
+	render.SetColorMaterial()
+
+	if self.Drawing then
+		--Indicator
+		render.DrawSphere(self.S, 1, 16, 16, color_white)
+		render.DrawSphere(self.E, 1, 16, 16, color_white)
+		local eye = LocalPlayer():EyePos()
+		local dist = eye:Distance(self.S)
+		local target = eye + LocalPlayer():GetAimVector() * (dist)
+
+		self.E = Vector(self.S.x, self.S.y, target.z)
+
+		render.DrawLine(self.S, Vector(self.S.x, self.S.y, target.z), color_white, false)
+
+	end
 
 end
 
-SWEP.PrimaryAttack = function()
-	self:SetNextPrimaryFire( CurTime() + 0.3 )
+SWEP.PrimaryAttack = function(self)
+	local tr = self:GetOwner():GetEyeTraceNoCursor()
+
+	if self.Drawing then
+		self.Drawing = false
+	else
+		self.S = tr.HitPos
+		self.Drawing = true
+	end
 end
 
-SWEP.SecondaryAttack = function()
-	self:SetNextSecondaryFire( CurTime() + 0.3 )
-end
-
-SWEP.Reload = function()
+SWEP.SecondaryAttack = function(self)
 
 end
 
-SWEP.HUDShouldDraw = function()
-	return false
+SWEP.Reload = function(self)
+
 end
 
-SWEP.Holster = function()
+SWEP.HUDShouldDraw = function(self)
+	return true
+end
 
+SWEP.Holster = function(self)
+	return true
 end
