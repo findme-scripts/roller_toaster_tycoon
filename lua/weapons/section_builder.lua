@@ -47,13 +47,17 @@ SWEP.RenderContext = function(self)
 			local target = eye + LocalPlayer():GetAimVector() * (dist)
 
 			points[2] = Vector(points[1].x, points[1].y, target.z)
+		elseif self.Stage == 1 then
+			local tr = LocalPlayer():GetEyeTraceNoCursor()
+
+			points[3] = Vector(tr.HitPos.x, tr.HitPos.y, points[2].z)
 		end
 
 
 		for _, v in pairs(points) do
 			render.DrawSphere(v, 1, 16, 16, color_white)
 			if points[_+1] then
-				render.DrawLine(points[1], points[2], color_white, false)
+				render.DrawLine(points[_], points[_+1], color_white, false)
 			end
 		end
 
