@@ -3,9 +3,12 @@ AddCSLuaFile()
 local function GoTo_ControlPoint(pl, cmd, arg)
 	if !arg[1] then return end
 
-	local vec = Vector(tonumber(arg[1]), tonumber(arg[2]), tonumber(arg[3]))
+	local Player_Pos = pl:GetShootPos()
+	local ControlPoint_Pos = Vector(tonumber(arg[1]), tonumber(arg[2]), tonumber(arg[3]))
 
-	pl:SetPos(vec)
+	local Ang = (ControlPoint_Pos-Player_Pos):Angle()
+
+	pl:SetEyeAngles(Ang)
 end
 concommand.Add("GoTo_ControlPoint", GoTo_ControlPoint)
 
@@ -21,12 +24,28 @@ local function BuildSplineViewer()
 	SplineViewer:ShowCloseButton( true ) 
 	SplineViewer:MakePopup()
 
+	local Should_RenderStuff = false
+	local DebugRenderSpline = function()
+		if SplineViewer.ShouldRenderPanel then
+			Should_RenderStuff = SplineViewer.ShouldRenderPanel:GetChecked()
+		end
+
+		if !Should_RenderStuff then return end
+		--3D RENDERING CONTEXT AFTER THIS POINT--
+
+		render.SetColorMaterial()
+		render.DrawSphere(LocalPlayer():GetPos(), 8, 16, 16, color_white)
+
+	end
+
 	SplineViewer.Think = function()
 
 		----------------Generate Control Points list----------------
 		if !SplineViewer.SplineColumn then return end
-		if !SplineViewer.SplineColumn:GetSelectedItem() then return end
+		if !SplineViewer.SplineColumn:GetSelectedItem() then Should_RenderStuff = false return end
 
+		--SPLINE SELECTED IN COLUMN AT THIS POINT--
+		Should_RenderStuff = true
 		local SelectedSpline = SplineViewer.SplineColumn:GetSelectedItem()
 		local ControlPoints = SelectedSpline.ControlPoints
 
@@ -69,7 +88,6 @@ local function BuildSplineViewer()
 	local Container = vgui.Create( "DPanel", SplineViewer )
 	Container:SetPos(0, 25)
 	Container:SetSize(120 + 280, 350)
-	--Container:SetPaintBackgroundEnabled( true )
 	Container:SetBackgroundColor( Color(80, 80, 80) )
 
 
@@ -118,6 +136,32 @@ local function BuildSplineViewer()
 
 
 
+
+
+	local SettingsContainer = vgui.Create( "DPanel", SplineViewer )
+	SettingsContainer:SetPos(Container:GetWide(), 25)
+	SettingsContainer:SetSize(SplineViewer:GetWide()-Container:GetWide(), 350)
+	SettingsContainer:SetBackgroundColor( Color(80, 80, 80) )
+
+
+
+
+
+
+
+
+	local DermaCheckbox = SettingsContainer:Add( "DCheckBoxLabel", SettingsContainer )
+	DermaCheckbox:SetPos( 4, 4 )
+	DermaCheckbox:SetSize(120, 25)
+	DermaCheckbox:SetText("render spline [debug]")
+	DermaCheckbox:SetValue( false )
+
+	SplineViewer.ShouldRenderPanel = DermaCheckbox
+
+
+
+
+	hook.Add("PostDrawOpaqueRenderables", "Spline Viewer - Render Context", DebugRenderSpline)
 
 end
 
