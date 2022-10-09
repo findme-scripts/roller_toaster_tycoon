@@ -80,7 +80,7 @@ Splines =
 		end,
 
 		Cycle = function(self)
-			local TimeStep = 0.0001
+			local TimeStep = 0.0003
 
 			if self.t+TimeStep > 1 then
 				self.t = 0
@@ -89,7 +89,7 @@ Splines =
 			end
 
 			self.SplinePos = self:CalcSplinePos()
-			render.DrawSphere(self.SplinePos, 24, 16, 16, Color(255, 80, 80))
+			render.DrawSphere(self.SplinePos, 16, 16, 16, Color(255, 80, 80))
 		end,
 
 		CalcSplinePos = function(self, int)
@@ -126,7 +126,7 @@ Splines =
 			local Direction = (E-S); Direction:Normalize();
 
 			self.ControlPoints = {}
-			for _, Point in pairs(S:ToCircle(800, 64)) do --for i=0, Total_ControlPoints-1 do --(i=0, -1) we steppin back.
+			for _, Point in pairs(S:ToCircle(800, 128)) do --for i=0, Total_ControlPoints-1 do --(i=0, -1) we steppin back.
 				table.insert(self.ControlPoints, Point)
 			end
 		end,
@@ -135,6 +135,16 @@ Splines =
 		Randomize_MiddleControlPoints = function(self)
 			for i=2, #self.ControlPoints-2 do
 				self.ControlPoints[i] = self.ControlPoints[i] + Vector(math.random(-50, 50), math.random(-50, 50), math.random(-512, 2500))
+			end
+		end,
+
+		--TODO Replace, just testing.
+		Randomize_AllControlPoints = function(self, num)
+			local range = num || math.random(1, 128)
+			for k, v in pairs(self.ControlPoints) do
+				if math.random(1, 2) == 1 then
+				self.ControlPoints[k] = v + Vector(math.random(0, range), math.random(0, range), math.random(0, range+3000))
+				end
 			end
 		end,
 
@@ -183,7 +193,8 @@ local function New_RoundTrack()
 	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
 
 	local spline = Splines:New( { StartPos, EndPos } )
-	spline:AddControlPoints(math.random(0, 9))
+	spline:AddControlPoints(128)
+	spline:Randomize_AllControlPoints(512)
 
 end
 

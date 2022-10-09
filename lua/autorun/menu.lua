@@ -16,14 +16,15 @@ if SERVER then return end
 
 local function BuildSplineViewer()
 	SplineViewer = vgui.Create( "DFrame" )
-	SplineViewer:SetPos( 5, 5 ) 
-	SplineViewer:SetSize( 700, 500 ) 
-	SplineViewer:SetTitle( "Spline Viewer" ) 
-	SplineViewer:SetVisible( true ) 
-	SplineViewer:SetDraggable( true ) 
-	SplineViewer:ShowCloseButton( true ) 
+	SplineViewer:SetPos( 5, 5 )
+	SplineViewer:SetSize( 700, 500 )
+	SplineViewer:SetTitle( "Spline Viewer" )
+	SplineViewer:SetVisible( true )
+	SplineViewer:SetDraggable( true )
+	SplineViewer:ShowCloseButton( true )
 	SplineViewer:MakePopup()
 
+	local ActiveSpline = nil
 	local Should_RenderStuff = false
 	local DebugRenderSpline = function()
 		if SplineViewer.ShouldRenderPanel then
@@ -33,8 +34,40 @@ local function BuildSplineViewer()
 		if !Should_RenderStuff then return end
 		--3D RENDERING CONTEXT AFTER THIS POINT--
 
-		render.SetColorMaterial()
-		render.DrawSphere(LocalPlayer():GetPos(), 8, 16, 16, color_white)
+
+
+		if !ActiveSpline then 
+			--Check before death.
+			if !SplineViewer then return end
+			if !SplineViewer.SplineColumn then return end
+			if !SplineViewer.SplineColumn:GetSelectedItem() then return end
+			ActiveSpline = Splines:GetAll()[SplineViewer.SplineColumn:GetSelectedItem().SplineID]
+			return
+		end
+	
+		local ControlPoints = ActiveSpline.ControlPoints
+		local Precision = #ControlPoints
+		local t_frac = 1 / Precision
+
+		local AllSplinePos = {}
+		for i=1, Precision do
+			local spline_pos = ActiveSpline:CalcSplinePos(i*t_frac)
+			table.insert(AllSplinePos, spline_pos)
+		end
+		PrintTable(AllSplinePos)
+
+		for k, v in pairs(AllSplinePos) do
+
+			local ToVec = AllSplinePos[k+1]
+			if k == #AllSplinePos then
+				ToVec = AllSplinePos[1]
+			end
+
+			render.SetColorMaterial()
+			render.DrawLine( v, ToVec, Color( 255, 80, 80 ), false )
+		end
+
+
 
 	end
 
