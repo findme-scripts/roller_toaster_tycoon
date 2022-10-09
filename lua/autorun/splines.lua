@@ -1,5 +1,6 @@
 AddCSLuaFile()
 if SERVER then return end
+if !IsValid(LocalPlayer()) then return end
 
 local meta = FindMetaTable( "Vector" )
 meta.ToCircle = function(self, radius, numpoints)

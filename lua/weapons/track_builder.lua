@@ -1,7 +1,5 @@
 AddCSLuaFile()
 
-include("autorun/gmod-spline/spline.lua")
-
 SWEP.PrintName = "Track Builder"
 SWEP.Author = "find me"
 SWEP.Purpose = "Build cool roller toasters."
