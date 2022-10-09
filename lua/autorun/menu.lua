@@ -2,7 +2,6 @@ AddCSLuaFile()
 if SERVER then return end
 
 local meta = FindMetaTable( "Vector" )
-
 meta.ToCircle = function(self, radius, numpoints)
 	local Pos = self || Vector() --I suck.
 	local Num = numpoints || 0
@@ -19,6 +18,9 @@ meta.ToCircle = function(self, radius, numpoints)
 
 	return Points
 end
+
+
+
 
 local function set_hook(tr)
 
