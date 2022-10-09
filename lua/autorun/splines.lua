@@ -73,7 +73,7 @@ Splines =
 			render.SetColorMaterial()
 
 			for i=1, #self.ControlPoints do
-				render.DrawSphere(self.ControlPoints[i], 6, 16, 16, color_white)
+				render.DrawSphere(self.ControlPoints[i], 2, 16, 16, color_white)
 			end
 
 			self:Cycle()
@@ -89,7 +89,7 @@ Splines =
 			end
 
 			self.SplinePos = self:CalcSplinePos()
-			render.DrawSphere(self.SplinePos, 16, 16, 16, Color(255, 80, 80))
+			render.DrawSphere(self.SplinePos, 4, 16, 16, Color(255, 80, 80))
 		end,
 
 		CalcSplinePos = function(self, int)

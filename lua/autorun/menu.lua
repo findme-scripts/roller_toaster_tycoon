@@ -99,6 +99,14 @@ local function BuildSplineViewer()
 			if !SplineViewer.SplineColumn:GetSelectedItem() then return end
 			ActiveSpline = Splines:GetAll()[SplineViewer.SplineColumn:GetSelectedItem().SplineID]
 			return
+		else
+			--Deselected & changed item.
+			if !SplineViewer then return end
+			if !SplineViewer.SplineColumn then return end
+			if !SplineViewer.SplineColumn:GetSelectedItem() then return end
+			if ActiveSpline != Splines:GetAll()[SplineViewer.SplineColumn:GetSelectedItem().SplineID] then
+				ActiveSpline = Splines:GetAll()[SplineViewer.SplineColumn:GetSelectedItem().SplineID]
+			end
 		end
 	
 		local ControlPoints = ActiveSpline.ControlPoints
@@ -111,7 +119,7 @@ local function BuildSplineViewer()
 			table.insert(AllSplinePos, spline_pos)
 		end
 
-		render.DrawSphere(self.ControlPoints[i], 6, 16, 16, color_white)
+		--render.DrawSphere(ControlPoints[i], 6, 16, 16, color_white)
 
 		for k, v in pairs(AllSplinePos) do
 

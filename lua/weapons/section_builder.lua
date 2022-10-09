@@ -26,6 +26,8 @@ SWEP.Stage = -1
 SWEP.Drawing = false
 SWEP.DrawingPoints = {}
 
+SWEP.LastEntry = 0
+
 
 
 
@@ -51,6 +53,20 @@ SWEP.RenderContext = function(self)
 			local tr = LocalPlayer():GetEyeTraceNoCursor()
 
 			points[3] = Vector(tr.HitPos.x, tr.HitPos.y, points[2].z)
+		elseif self.Stage > 1 then
+
+
+
+			if self.Stage != self.LastEntry then
+				self.LastEntry = self.Stage
+				local spline = Splines:New( { points[self.Stage], LerpVector(0.5, points[self.Stage], points[self.Stage+1]), points[self.Stage+1] } )
+			end
+
+			local tr = LocalPlayer():GetEyeTraceNoCursor()
+			points[2 + self.Stage] = Vector(tr.HitPos.x, tr.HitPos.y, points[1 + self.Stage].z)
+
+
+
 		end
 
 
@@ -60,8 +76,6 @@ SWEP.RenderContext = function(self)
 				render.DrawLine(points[_], points[_+1], color_white, false)
 			end
 		end
-
-
 
 	end
 
