@@ -80,7 +80,7 @@ Splines =
 		end,
 
 		Cycle = function(self)
-			local TimeStep = 0.00009
+			local TimeStep = 0.0001
 
 			if self.t+TimeStep > 1 then
 				self.t = 0
@@ -89,7 +89,7 @@ Splines =
 			end
 
 			self.SplinePos = self:CalcSplinePos()
-			render.DrawSphere(self.SplinePos, 2, 16, 16, Color(255, 80, 80))
+			render.DrawSphere(self.SplinePos, 24, 16, 16, Color(255, 80, 80))
 		end,
 
 		CalcSplinePos = function(self, int)
@@ -192,7 +192,7 @@ for i=1, 0 do
 	spline:Randomize_MiddleControlPoints()
 end
 
-for i=1, 4 do
+for i=1, 12 do
 	local StartPos = pos + (tr.HitPos-pos):GetNormal()*64 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-256 + Vector(0, 0, 32)
 	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
 
