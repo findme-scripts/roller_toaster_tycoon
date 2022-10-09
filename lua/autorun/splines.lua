@@ -137,6 +137,7 @@ Splines =
 			end
 		end,
 
+		--TODO Replace, just testing.
 		LastSpline_PlayerViewCalc = function(self, pl, pos, ang, fov)
 			if !pl.PUTMEONTHERIDE then return end
 			if !self.SplinePos then return end
