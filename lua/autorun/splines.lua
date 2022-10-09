@@ -194,7 +194,7 @@ local function New_RoundTrack()
 
 	local spline = Splines:New( { StartPos, EndPos } )
 	spline:AddControlPoints(128)
-	spline:Randomize_AllControlPoints(512)
+	--spline:Randomize_AllControlPoints(512)
 
 end
 
