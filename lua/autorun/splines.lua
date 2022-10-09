@@ -1,10 +1,29 @@
 AddCSLuaFile()
 if SERVER then return end
 
+local meta = FindMetaTable( "Vector" )
+meta.ToCircle = function(self, radius, numpoints)
+	local Pos = self || Vector() --I suck.
+	local Num = numpoints || 0
+	local Rad = radius || 0
+	local Wedge = 360/Num
+	local Points = {}
+
+	for i = 1, Num+1 do
+		local angle = (i*Wedge) * math.pi / 180
+		local ptx, pty = Pos.x + Rad * math.cos( angle ), Pos.y + Rad * math.sin( angle )
+
+		table.insert(Points, Vector(ptx, pty, Pos.z))
+	end
+
+	return Points
+end
+
 Splines = 
 {
 	__call = function(self)
 		hook.Add("PostDrawOpaqueRenderables", "Splines - Render Context", function() self:RenderContext() end)
+		hook.Add("CalcView", "Splines - Player View Context", function(pl, pos, ang, fov) return self:RenderPlayerView(pl, pos, ang, fov) end)
 	end,
 
 	__index = {
@@ -33,6 +52,10 @@ Splines =
 			for i=1, #self.Active do
 				self.Active[i]:Render()
 			end
+		end,
+
+		RenderPlayerView = function(self, pl, pos, ang, fov)
+			return self.Active[#self.Active]:LastSpline_PlayerViewCalc(pl, pos, ang, fov)
 		end
 	},
 
@@ -49,14 +72,14 @@ Splines =
 			render.SetColorMaterial()
 
 			for i=1, #self.ControlPoints do
-				render.DrawSphere(self.ControlPoints[i], 2, 16, 16, color_white)
+				render.DrawSphere(self.ControlPoints[i], 6, 16, 16, color_white)
 			end
 
 			self:Cycle()
 		end,
 
 		Cycle = function(self)
-			local TimeStep = 0.001
+			local TimeStep = 0.00009
 
 			if self.t+TimeStep > 1 then
 				self.t = 0
@@ -64,7 +87,8 @@ Splines =
 				self.t = self.t+TimeStep
 			end
 
-			render.DrawSphere(self:CalcSplinePos(), 1, 16, 16, Color(255, 80, 80))
+			self.SplinePos = self:CalcSplinePos()
+			render.DrawSphere(self.SplinePos, 2, 16, 16, Color(255, 80, 80))
 		end,
 
 		CalcSplinePos = function(self, int)
@@ -101,16 +125,32 @@ Splines =
 			local Direction = (E-S); Direction:Normalize();
 
 			self.ControlPoints = {}
-			for i=0, Total_ControlPoints-1 do --(i=0, -1) we steppin back.
-				table.insert(self.ControlPoints, S+Direction*i*Spacing)
+			for _, Point in pairs(S:ToCircle(1500, 64)) do --for i=0, Total_ControlPoints-1 do --(i=0, -1) we steppin back.
+				table.insert(self.ControlPoints, Point)
 			end
 		end,
 
 		--TODO Replace, just testing.
 		Randomize_MiddleControlPoints = function(self)
 			for i=2, #self.ControlPoints-2 do
-				self.ControlPoints[i] = self.ControlPoints[i] + Vector(0, 0, math.random(-32, 32))
+				self.ControlPoints[i] = self.ControlPoints[i] + Vector(math.random(-50, 50), math.random(-50, 50), math.random(-512, 2500))
 			end
+		end,
+
+		LastSpline_PlayerViewCalc = function(self, pl, pos, ang, fov)
+			if !pl.PUTMEONTHERIDE then return end
+			if !self.SplinePos then return end
+
+				local ThePartySpot = self.SplinePos
+
+				local view = {
+					origin = ThePartySpot,
+					angles = angles,
+					fov = fov,
+					drawviewer = true
+				}
+
+			return view
 		end
 
 	}
@@ -132,7 +172,7 @@ if !IsValid(LocalPlayer()) then return end
 local tr = LocalPlayer():GetEyeTraceNoCursor()
 local pos = LocalPlayer():GetPos()
 
-for i=1, 12 do
+for i=1, 0 do
 	local StartPos = pos + (tr.HitPos-pos):GetNormal()*64 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-64 + Vector(0, 0, 32) + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128*i
 	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
 
@@ -141,7 +181,7 @@ for i=1, 12 do
 	spline:Randomize_MiddleControlPoints()
 end
 
-for i=1, 12 do
+for i=1, 0 do
 	local StartPos = pos + (tr.HitPos-pos):GetNormal()*(128+i*24) + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-64 + Vector(0, 0, 32)
 	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
 
@@ -150,13 +190,19 @@ for i=1, 12 do
 	spline:Randomize_MiddleControlPoints()
 end
 
-for i=1, 12 do
+for i=1, 1 do
 	local StartPos = pos + (tr.HitPos-pos):GetNormal()*64 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-256 + Vector(0, 0, 32)
 	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
 
-	local spline = Splines:New( { StartPos, EndPos } )
+	local spline = Splines:New( { StartPos+Vector(0, 0, 512), EndPos+Vector(0, 0, 512) } )
 	spline:AddControlPoints(math.random(0, 9))
 	spline:Randomize_MiddleControlPoints()
 end
+
+
+local function ToggleRide(pl, cmd, arg)
+	pl.PUTMEONTHERIDE = !pl.PUTMEONTHERIDE
+end
+concommand.Add("ToggleRide", ToggleRide)
 
 ----------END TESTING----------
