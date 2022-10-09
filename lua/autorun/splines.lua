@@ -192,7 +192,7 @@ for i=1, 0 do
 	spline:Randomize_MiddleControlPoints()
 end
 
-for i=1, 1 do
+for i=1, 4 do
 	local StartPos = pos + (tr.HitPos-pos):GetNormal()*64 + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*-256 + Vector(0, 0, 32)
 	local EndPos = StartPos + ((tr.HitPos-pos):GetNormal():Cross(Vector(0, 0, 1)))*128
 
