@@ -22,9 +22,9 @@ SWEP.Category = "Roller Toaster Tycoon"
 if SERVER then return end
 
 
-SWEP.S = Vector()
-SWEP.E = Vector()
+SWEP.Stage = -1
 SWEP.Drawing = false
+SWEP.DrawingPoints = {}
 
 
 
@@ -39,34 +39,54 @@ SWEP.RenderContext = function(self)
 	render.SetColorMaterial()
 
 	if self.Drawing then
-		--Indicator
-		render.DrawSphere(self.S, 1, 16, 16, color_white)
-		render.DrawSphere(self.E, 1, 16, 16, color_white)
-		local eye = LocalPlayer():EyePos()
-		local dist = eye:Distance(self.S)
-		local target = eye + LocalPlayer():GetAimVector() * (dist)
+		local points = self.DrawingPoints
 
-		self.E = Vector(self.S.x, self.S.y, target.z)
+		if self.Stage == 0 then
+			local eye = LocalPlayer():EyePos()
+			local dist = eye:Distance(points[1])
+			local target = eye + LocalPlayer():GetAimVector() * (dist)
 
-		render.DrawLine(self.S, Vector(self.S.x, self.S.y, target.z), color_white, false)
+			points[2] = Vector(points[1].x, points[1].y, target.z)
+		end
+
+
+		for _, v in pairs(points) do
+			render.DrawSphere(v, 1, 16, 16, color_white)
+			if points[_+1] then
+				render.DrawLine(points[1], points[2], color_white, false)
+			end
+		end
+
+
 
 	end
 
+end
+
+SWEP.NewStage = function(self, tr)
+	if self.Stage == -1 then
+		self.Drawing = false
+		self.DrawingPoints = {}
+	elseif self.Stage == 0 then
+		table.insert(self.DrawingPoints, tr.HitPos)
+
+		self.Drawing = true
+	elseif self.Stage == 1 then
+
+	end
 end
 
 SWEP.PrimaryAttack = function(self)
 	local tr = self:GetOwner():GetEyeTraceNoCursor()
 
-	if self.Drawing then
-		self.Drawing = false
-	else
-		self.S = tr.HitPos
-		self.Drawing = true
-	end
+	self.Stage = self.Stage + 1
+	self:NewStage(tr)
+
 end
 
 SWEP.SecondaryAttack = function(self)
-
+	self.Stage = -1
+	self:NewStage()
 end
 
 SWEP.Reload = function(self)
