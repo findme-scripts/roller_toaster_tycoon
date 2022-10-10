@@ -253,20 +253,3 @@ local function Command_ToggleMenu(pl, cmd, arg)
 	end
 end
 concommand.Add("ToggleMenu", Command_ToggleMenu)
-
-
-
-
-
-
-
-
-
---[[
-	local node = dtree:AddNode( "Node One" )
-
-	local node = dtree:AddNode( "Node Two" )
-	local cnode = node:AddNode( "Node 2.1" )
-	local gcnode = cnode:AddNode( "Node 2.5" )
-	local cnode = node:AddNode( "Node 2.6" )
---]]

@@ -71,7 +71,7 @@ SWEP.RenderContext = function(self)
 
 
 
-	--THICK BLOC OF INTELLIGENCE
+	--THICK BLOC OF INTELLIGENCE - uncomment code block above to auto ride the spline.
 	if !self.T then self.T = 0 end
 	self.T = self.T + 1
 	if self.T > 0.1/FrameTime() then
