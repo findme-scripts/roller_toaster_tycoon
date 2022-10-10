@@ -33,20 +33,62 @@ SWEP.Initialize = function(self)
 	self.DrawPoints = {}
 
 	hook.Add("PostDrawOpaqueRenderables", "Section Builder - Render Context", function() if !IsValid(self) then return end self:RenderContext() end)
+	--hook.Add("CalcView", "Section Builder - Player View Context", function(pl, pos, ang, fov) if !IsValid(self) then return end self:Calc(pl, pos, ang, fov) end)
 end
+
+--[[
+hook.Add("CalcView", "Section Builder - Playefefer View Context", function(pl, pos, ang, fov)
+
+		local p = STUPIDDDDD || pos
+print("fewdd")
+		local view = {
+			origin = p,
+			angles = angles,
+			fov = fov,
+			drawviewer = true
+		}
+
+	return view
+end)--]]
+
 
 SWEP.RenderContext = function(self)
 	if #self.DrawPoints == 0 then return end
 
 	for k, v in pairs(self.DrawPoints) do
+
 		for _, S in pairs(v) do
 
 			local E = v[_+1]
 			if _ != #v then
-				render.DrawBeam( S, E, 1, 0, 1, Color( 255, 80, 80 ))
+				render.DrawBeam( S, E, 1, 0, 0.5, Color( 255, 80, 80 ))
 			end
+
 		end
+
 	end
+
+
+
+
+	--THICK BLOC OF INTELLIGENCE
+	if !self.T then self.T = 0 end
+	self.T = self.T + 1
+	if self.T > 0.1/FrameTime() then
+		self.T = 0
+	if !self.TestLast then self.TestLast = 0 end
+	self.TestLast = self.TestLast + 1
+	if self.TestLast > #self.DrawPoints[1] then self.TestLast = 1 end
+	STUPIDDDDD = self.DrawPoints[1][self.TestLast]
+	end
+	if STUPIDDDDD then
+		render.DrawSphere(STUPIDDDDD, 1, 16, 16, color_white)
+	end
+
+
+
+
+
 
 end
 
@@ -66,7 +108,7 @@ SWEP.PrimaryAttack = function(self)
 
 	if self.LastStart then
 		local spline = Splines:New( { self.LastStart, tr.HitPos } )
-		spline:AddControlPoints(6)
+		spline:AddControlPoints(4)
 		spline:Randomize_MiddleControlPoints()
 		spline.DebugRender = true
 		table.insert(self.Sections, spline)
@@ -135,7 +177,16 @@ SWEP.CalcCombinedSplines = function(self)
 end
 
 SWEP.RemoveAllSplines = function(self)
+	for i=1, #self.Sections do
+		self.Sections[i].DebugRender = false
+		self.Sections[i]:Remove()
+	end
+	for i=1, #self.Corners do
+		self.Corners[i].DebugRender = false
+		self.Corners[i]:Remove()
+	end
 	for i=1, #self.CombinedSplines do
+		self.CombinedSplines[i].DebugRender = false
 		self.CombinedSplines[i]:Remove()
 	end
 end

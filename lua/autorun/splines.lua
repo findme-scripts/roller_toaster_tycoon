@@ -24,7 +24,7 @@ Splines =
 {
 	__call = function(self)
 		hook.Add("PostDrawOpaqueRenderables", "Splines - Render Context", function() self:RenderContext() end)
-		hook.Add("CalcView", "Splines - Player View Context", function(pl, pos, ang, fov) return self:RenderPlayerView(pl, pos, ang, fov) end)
+		--hook.Add("CalcView", "Splines - Player View Context", function(pl, pos, ang, fov) return self:RenderPlayerView(pl, pos, ang, fov) end)
 	end,
 
 	__index = {
@@ -168,7 +168,7 @@ Splines =
 		--TODO Replace, just testing.
 		Randomize_MiddleControlPoints = function(self)
 			for i=2, #self.ControlPoints-1 do
-				self.ControlPoints[i] = self.ControlPoints[i] + Vector(math.random(-60, 60), math.random(-60, 60), math.random(0, 160))
+				self.ControlPoints[i] = self.ControlPoints[i] + Vector(math.random(-60, 60), math.random(-60, 60), math.random(0, 120))
 			end
 		end,
 
