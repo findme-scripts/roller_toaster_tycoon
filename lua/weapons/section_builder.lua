@@ -63,7 +63,7 @@ SWEP.RenderContext = function(self)
 			if _ != #v then
 				render.DrawBeam( S, E, 1, 0, 0.5, Color( 255, 80, 80 ))
 			end
-
+render.DrawSphere(S, 1, 16, 16, color_white)
 		end
 
 	end
