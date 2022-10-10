@@ -86,9 +86,9 @@ local function BuildSplineViewer()
 			Should_RenderStuff = SplineViewer.ShouldRenderPanel:GetChecked()
 		end
 
-		if !Should_RenderStuff then return end
+		--if !Should_RenderStuff then return end
 		--3D RENDERING CONTEXT AFTER THIS POINT--
-		render.SetColorMaterial()
+		--render.SetColorMaterial() --this is all really bad
 
 
 
@@ -108,30 +108,10 @@ local function BuildSplineViewer()
 				ActiveSpline = Splines:GetAll()[SplineViewer.SplineColumn:GetSelectedItem().SplineID]
 			end
 		end
-	
-		local ControlPoints = ActiveSpline.ControlPoints
-		local Precision = #ControlPoints
-		local t_frac = 1 / Precision
 
-		local AllSplinePos = {}
-		for i=1, Precision do
-			local spline_pos = ActiveSpline:CalcSplinePos(i*t_frac)
-			table.insert(AllSplinePos, spline_pos)
+		if ActiveSpline.DebugRender != Should_RenderStuff then --messyyyyy
+			ActiveSpline.DebugRender = Should_RenderStuff
 		end
-
-		--render.DrawSphere(ControlPoints[i], 6, 16, 16, color_white)
-
-		for k, v in pairs(AllSplinePos) do
-
-			local ToVec = AllSplinePos[k+1]
-			if k == #AllSplinePos then
-				ToVec = AllSplinePos[1]
-			end
-
-			render.DrawLine( v, ToVec, Color( 255, 80, 80 ), false )
-		end
-
-
 
 	end
 

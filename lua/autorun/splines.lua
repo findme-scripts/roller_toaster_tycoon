@@ -70,17 +70,46 @@ Splines =
 	__SplineIndex = {
 
 		Render = function(self)
+
 			render.SetColorMaterial()
 
-			for i=1, #self.ControlPoints do
-				render.DrawSphere(self.ControlPoints[i], 2, 16, 16, color_white)
+			if self.DebugRender then --new
+
+				local ControlPoints = self.ControlPoints
+				local Precision = #ControlPoints*3
+				local t_frac = 1 / Precision
+
+				local AllSplinePos = {}
+				for i=0, Precision do
+					local spline_pos = self:CalcSplinePos(i*t_frac)
+					table.insert(AllSplinePos, spline_pos)
+				end
+
+				--self:Cycle()
+
+				for k, v in pairs(AllSplinePos) do
+
+					local ToVec = AllSplinePos[k+1]
+					if k != #AllSplinePos then
+						--render.DrawLine( v, ToVec, Color( 255, 80, 80 ), false )
+						render.DrawBeam( v, ToVec, 2, 0, 1, Color( 255, 80, 80 ))
+					end
+				end
+
 			end
 
+
+			for i=1, #self.ControlPoints do
+				render.DrawSphere(self.ControlPoints[i], 0.5, 8, 8, Color( 80, 80, 255 ))
+			end
+
+
 			self:Cycle()
+
 		end,
 
 		Cycle = function(self)
-			local TimeStep = 0.0003
+			local TimeStep = 0.0008
 
 			if self.t+TimeStep > 1 then
 				self.t = 0
@@ -89,7 +118,7 @@ Splines =
 			end
 
 			self.SplinePos = self:CalcSplinePos()
-			render.DrawSphere(self.SplinePos, 4, 16, 16, Color(255, 80, 80))
+			render.DrawSphere(self.SplinePos, 1, 16, 16, Color(80, 255, 80))
 		end,
 
 		CalcSplinePos = function(self, int)
@@ -133,8 +162,8 @@ Splines =
 
 		--TODO Replace, just testing.
 		Randomize_MiddleControlPoints = function(self)
-			for i=2, #self.ControlPoints-2 do
-				self.ControlPoints[i] = self.ControlPoints[i] + Vector(math.random(-50, 50), math.random(-50, 50), math.random(-512, 2500))
+			for i=2, #self.ControlPoints-1 do
+				self.ControlPoints[i] = self.ControlPoints[i] + Vector(math.random(-30, 30), math.random(-30, 30), math.random(-30, 50))
 			end
 		end,
 

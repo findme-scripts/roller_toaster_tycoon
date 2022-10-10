@@ -61,7 +61,8 @@ SWEP.RenderContext = function(self)
 
 			if self.Stage != self.LastEntry then
 				self.LastEntry = self.Stage
-				local spline = Splines:New( { points[self.Stage], LerpVector(0.5, points[self.Stage], points[self.Stage+1]), points[self.Stage+1] } )
+				local spline = Splines:New( { points[self.Stage], LerpVector(0.3, points[self.Stage], points[self.Stage+1]), LerpVector(0.7, points[self.Stage], points[self.Stage+1]), points[self.Stage+1] } )
+				spline:Randomize_MiddleControlPoints()
 			end
 
 			local tr = LocalPlayer():GetEyeTraceNoCursor()
