@@ -63,6 +63,23 @@ SWEP.RenderContext = function(self)
 				self.LastEntry = self.Stage
 				local spline = Splines:New( { points[self.Stage], LerpVector(0.3, points[self.Stage], points[self.Stage+1]), LerpVector(0.7, points[self.Stage], points[self.Stage+1]), points[self.Stage+1] } )
 				spline:Randomize_MiddleControlPoints()
+				spline.DebugRender = true
+
+
+				if self.LastSpline then
+					self.InterPoints = {}
+
+					table.insert(self.InterPoints, self.LastSpline:CalcSplinePos(0.8))
+					table.insert(self.InterPoints, self.LastSpline:CalcSplinePos(0.99)) --Find out if we can extend bounds of t for reference.
+					table.insert(self.InterPoints, spline:CalcSplinePos(0.01)) --Find out if we can extend bounds of t for reference.
+					table.insert(self.InterPoints, spline:CalcSplinePos(0.2))
+
+					local InterSpline = Splines:New( self.InterPoints )
+					InterSpline.DebugRender = true
+
+				end		
+
+				self.LastSpline = spline
 			end
 
 			local tr = LocalPlayer():GetEyeTraceNoCursor()
@@ -108,6 +125,7 @@ end
 SWEP.SecondaryAttack = function(self)
 	self.Stage = -1
 	self:NewStage()
+	self.LastSpline = nil
 end
 
 SWEP.Reload = function(self)

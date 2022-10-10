@@ -232,7 +232,20 @@ New_RoundTrack()
 
 
 
+local function CopyLast(pl, cmd, arg)
+	local New_Controls = {}
+	for i=0, 3 do
+		print(i)
+		local spline = Splines:GetAll()[#Splines:GetAll() - (3-i)]
 
+		for k, v in pairs(spline.ControlPoints) do
+			table.insert(New_Controls, v)
+		end
+
+	end
+	local spline = Splines:New(New_Controls)
+end
+concommand.Add("copy_track", CopyLast)
 
 
 local function ToggleRide(pl, cmd, arg)
