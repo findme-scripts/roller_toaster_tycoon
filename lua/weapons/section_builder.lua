@@ -34,6 +34,8 @@ SWEP.LastEntry = 0
 
 
 SWEP.Initialize = function(self)
+	if !Splines then include("autorun/splines.lua") end --am i really dumb or really smart.
+
 	hook.Add("PostDrawOpaqueRenderables", "Section Builder - Render Context", function() self:RenderContext() end)
 end
 
