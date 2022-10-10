@@ -69,6 +69,11 @@ Splines =
 
 	__SplineIndex = {
 
+		Remove = function(self)
+			Splines:GetAll()[self.Key] = nil
+			table.remove(Splines.Active, self.Key)
+		end,
+
 		Render = function(self)
 
 			render.SetColorMaterial()
@@ -146,7 +151,7 @@ Splines =
 
 		end,
 
-		--TODO Replace, just testing. --THIS HAS CIRCLE CREATE CODE IN IT.
+		--TODO Replace, just testing.
 		AddControlPoints = function(self, num)
 			local Total_ControlPoints = 2+ (num || 0)
 			local S = self.ControlPoints[1]
@@ -155,15 +160,15 @@ Splines =
 			local Direction = (E-S); Direction:Normalize();
 
 			self.ControlPoints = {}
-			for _, Point in pairs(S:ToCircle(800, 128)) do --for i=0, Total_ControlPoints-1 do --(i=0, -1) we steppin back.
-				table.insert(self.ControlPoints, Point)
+			for i=0, Total_ControlPoints-1 do --(i=0, -1) we steppin back.
+				table.insert(self.ControlPoints, S+Direction*i*Spacing)
 			end
 		end,
 
 		--TODO Replace, just testing.
 		Randomize_MiddleControlPoints = function(self)
 			for i=2, #self.ControlPoints-1 do
-				self.ControlPoints[i] = self.ControlPoints[i] + Vector(math.random(-30, 30), math.random(-30, 30), math.random(-30, 50))
+				self.ControlPoints[i] = self.ControlPoints[i] + Vector(math.random(-60, 60), math.random(-60, 60), math.random(0, 160))
 			end
 		end,
 
