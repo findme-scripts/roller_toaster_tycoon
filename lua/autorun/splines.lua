@@ -100,7 +100,7 @@ Splines =
 
 
 			for i=1, #self.ControlPoints do
-				render.DrawSphere(self.ControlPoints[i], 0.5, 8, 8, Color( 80, 80, 255 ))
+				--render.DrawSphere(self.ControlPoints[i], 0.5, 8, 8, Color( 80, 80, 255 ))
 			end
 
 
@@ -118,7 +118,7 @@ Splines =
 			end
 
 			self.SplinePos = self:CalcSplinePos()
-			render.DrawSphere(self.SplinePos, 1, 16, 16, Color(80, 255, 80))
+			--render.DrawSphere(self.SplinePos, 1, 16, 16, Color(80, 255, 80))
 		end,
 
 		CalcSplinePos = function(self, int)
