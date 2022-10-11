@@ -197,6 +197,13 @@ Splines =
 				}
 
 			return view
+		end,
+
+		Update = function(self, tbl)
+			local changes = tbl
+			for k, v in pairs(changes) do
+				self.ControlPoints[k] = v
+			end
 		end
 
 	}

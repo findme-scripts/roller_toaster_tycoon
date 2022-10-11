@@ -23,16 +23,20 @@ if SERVER then return end
 
 ---------------------------------------------------------------------------------
 
+SWEP.Mat = "models/wireframe"
+
 SWEP.C =
 	{
 		Color(80, 80, 80, 160),
 		Color(230, 80, 80, 255),
-		Color(80, 80, 200, 255)
+		Color(80, 80, 200, 255),
+		Color(80, 230, 80, 255)
 	}
 
 
 
 function SWEP:Initialize()
+	if !Splines then include("autorun/splines.lua") end
 	hook.Add("PostDrawOpaqueRenderables", "Spline Viewer - Render Context", function() if !IsValid(self) then return end self:RenderContext() end)
 	concommand.Add("drop", function(pl, cmd, arg) self:Command_Drop(pl, cmd, arg) end)
 end
@@ -65,10 +69,20 @@ function SWEP:RenderContext()
 		self.Min = self.dir*self.dist
 		self.Max = -self.dir*self.dist+Vector(0, 0, self.dist)
 		self.Point = Vector(0, 0, 0)
-		self.Acc = Vector(0.15, 0.09, 0.04)
+		self.PointB = Vector(0, 0, 0)
+		self.Acc = Vector(0.2, 0.6, -0.1)
+		self.AccB = Vector(0.5, 0.11, 0.8)
 	end
 
 	render.DrawWireframeBox( self.M, Angle(), -self.dir*self.dist, self.dir*self.dist+Vector(0, 0, self.dist), color_white, false )
+
+
+
+
+
+
+
+
 
 
 	if !self.Point then return end
@@ -90,7 +104,38 @@ function SWEP:RenderContext()
 		self:Splat((self.M+Vector(0, 0, 0)) + self.Point)
 	end
 
-	render.DrawSphere((self.M+Vector(0, 0, 0)) + self.Point, 1, 16, 16, self.C[2])
+	self.RealA = (self.M+Vector(0, 0, 0)) + self.Point
+	render.DrawSphere((self.M+Vector(0, 0, 0)) + self.Point, 2, 16, 16, self.C[3])
+
+
+
+
+
+
+
+
+	if !self.PointB then return end
+
+	self.PointB = self.PointB + self.AccB
+	self.OldPointB = self.PointB
+	self.PointB = Vector(math.Clamp(self.PointB.x, self.Min.x, self.Max.x), math.Clamp(self.PointB.y, self.Min.y, self.Max.y), math.Clamp(self.PointB.z, self.Min.z, self.Max.z))
+
+	if self.PointB.x != self.OldPointB.x then
+		self.AccB.x = -self.AccB.x
+		self:Splat((self.M+Vector(0, 0, 0)) + self.PointB)
+	end
+	if self.PointB.y != self.OldPointB.y then
+		self.AccB.y = -self.AccB.y
+		self:Splat((self.M+Vector(0, 0, 0)) + self.PointB)
+	end
+	if self.PointB.z != self.OldPointB.z then
+		self.AccB.z = -self.AccB.z
+		self:Splat((self.M+Vector(0, 0, 0)) + self.PointB)
+	end
+
+	self.RealB = (self.M+Vector(0, 0, 0)) + self.PointB
+	render.DrawSphere((self.M+Vector(0, 0, 0)) + self.PointB, 2, 16, 16, self.C[4])
+
 
 
 
@@ -103,6 +148,7 @@ function SWEP:RenderContext()
 
 	if !self.Drop then return end
 
+	local phys = self.Drop:GetPhysicsObject()
 	local p = self.Drop:GetPos()
 
 	if p.x > self.M.x+self.Min.x && p.x < self.M.x+self.Max.x then
@@ -112,26 +158,78 @@ function SWEP:RenderContext()
 			if p.z > self.M.z+self.Min.z && p.z < self.M.z+self.Max.z then
 
 				LocalPlayer():ChatPrint("["..tostring(math.Round(CurTime())).."] We in the matrix.")
-				if IsValid(self.Drop:GetPhysicsObject()) then
-					local phys = self.Drop:GetPhysicsObject()
-
-					local Acc = phys:GetVelocity():Length()
-					local Vel = phys:GetVelocity()
-					self.Drop:GetPhysicsObject():SetVelocity(Vel*0.96)
+				if IsValid(phys) then
+					if phys:IsGravityEnabled() then
+						phys:EnableGravity(false)
+					end
 				end
 
+			else
+				if IsValid(phys) then
+					if !phys:IsGravityEnabled() then
+						phys:EnableGravity(true)
+					end
+				end
 			end
 
+		else
+				if IsValid(phys) then
+					if !phys:IsGravityEnabled() then
+						phys:EnableGravity(true)
+					end
+				end
 		end
 
+	else
+				if IsValid(phys) then
+					if !phys:IsGravityEnabled() then
+						phys:EnableGravity(true)
+					end
+				end
 	end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	local p = LocalPlayer():GetPos()
+
+	if p.x > self.M.x+self.Min.x && p.x < self.M.x+self.Max.x then
+
+		if p.y > self.M.y+self.Min.y && p.y < self.M.y+self.Max.y then
+
+			if p.z > self.M.z+self.Min.z && p.z < self.M.z+self.Max.z then
+
+				--self.Mat = "models/wireframe"
+
+			else
+				--self.Mat = "hunter/myplastic"
+			end
+		else
+			--self.Mat = "hunter/myplastic"
+		end
+	else
+		--self.Mat = "hunter/myplastic"
+	end
+	--render.SetMaterial( Material(self.Mat) )
+	--render.DrawBox( self.M, Angle(), -self.dir*self.dist, self.dir*self.dist+Vector(0, 0, self.dist), color_white )
 
 
 end
 
 function SWEP:Command_Drop(pl, cmd, arg)
 	self.Drop = ents.CreateClientProp("models/props_junk/PopCan01a.mdl")
-	self.Drop:SetPos(self.M + Vector(0, 0, 1)*self.dist*1)
+	self.Drop:SetPos(self.M + Vector(0, 0, 1)*self.dist*2)
 	self.Drop:Spawn()
 	print(self.Drop:GetPhysicsObject())
 end
@@ -162,9 +260,9 @@ function SWEP:PrimaryAttack()
 	local tr = self:GetOwner():GetEyeTraceNoCursor()
 
 	if !self.S then
-		self.S = tr.HitPos
+		self.S = tr.HitPos + Vector(0, 0, 0)
 	elseif !self.E then
-		self.E = tr.HitPos
+		self.E = tr.HitPos + Vector(0, 0, 0)
 	end
 
 end
@@ -186,6 +284,7 @@ function SWEP:Reload()
 	self.Point = nil
 	self.Acc = nil
 	self.Splats = nil
+	self.Spline = nil
 end
 
 function SWEP:DrawHUD()
