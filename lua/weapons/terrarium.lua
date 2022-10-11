@@ -32,14 +32,26 @@ SWEP.C =
 		Color(255, 80, 80, 255), --1
 		Color(80, 255, 80, 255), --2
 		Color(80, 80, 255, 255), --3
-		Color(80, 80, 80, 160) --4 Background / Transparent
+		Color(80, 80, 80, 160)   --4 Background / Transparent
 	}
 
 
+function SWEP:DebugRender(hitpos)
+	render.SetColorMaterial()
+	render.DrawSphere(hitpos, 0.5, 16, 16, color_black)
 
+	if !self.S then return end
+
+	render.DrawSphere(self.S, 1, 16, 16, color_white)
+
+	if !self.E then return end
+
+	render.DrawSphere(self.E, 1, 16, 16, color_white)
+end
 
 function SWEP:RenderContext()
-
+	local tr = self:GetOwner():GetEyeTraceNoCursor()
+	self:DebugRender(tr.HitPos)
 end
 
 function SWEP:Think()
@@ -50,6 +62,11 @@ function SWEP:PrimaryAttack()
 	if !IsFirstTimePredicted() then return end
 	local tr = self:GetOwner():GetEyeTraceNoCursor()
 
+	if !self.S then
+		self.S = tr.HitPos
+	elseif !self.E then
+		self.E = tr.HitPos
+	end
 
 end
 
@@ -62,23 +79,22 @@ end
 function SWEP:Reload()
 	self.S = nil
 	self.E = nil
-	self.M = nil
-	self.dir = nil
-	self.dist = nil
-	self.Min = nil
-	self.Max = nil
-	self.Point = nil
-	self.Acc = nil
-	self.Splats = nil
-	self.Spline = nil
 end
 
-function SWEP:DrawDebug()
+function SWEP:DebugHUD()
+	if !self.S then return end
+
+	draw.RoundedBox( 4, 0, 0, 260, 300, self.C[4] )
+	draw.SimpleText( "S: "..tostring(self.S), "DermaDefault", 20, 20, color_white )
+
+	if !self.E then return end
+
+	draw.SimpleText( "E: "..tostring(self.E), "DermaDefault", 20, 35, color_white )
 
 end
 
 function SWEP:DrawHUD()
-	self:DrawDebug()
+	self:DebugHUD()
 end
 
 function SWEP:HUDShouldDraw()
