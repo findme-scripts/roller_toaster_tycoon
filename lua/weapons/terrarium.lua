@@ -38,15 +38,17 @@ SWEP.C =
 
 function SWEP:DebugRender(hitpos)
 	render.SetColorMaterial()
-	render.DrawSphere(hitpos, 0.5, 16, 16, color_black)
+	render.DrawSphere(hitpos, 0.25, 16, 16, color_black)
 
 	if !self.S then return end
 
-	render.DrawSphere(self.S, 1, 16, 16, color_white)
+	render.DrawSphere(self.S, 0.5, 16, 16, color_white)
+	render.DrawLine( self.S, self.S+Vector(0, 0, 0.5), self.C[2], false)
 
 	if !self.E then return end
 
-	render.DrawSphere(self.E, 1, 16, 16, color_white)
+	render.DrawSphere(self.E, 0.5, 16, 16, color_white)
+	render.DrawLine( self.E, self.E+Vector(0, 0, 0.5), self.C[1], false)
 end
 
 function SWEP:RenderContext()
@@ -82,14 +84,18 @@ function SWEP:Reload()
 end
 
 function SWEP:DebugHUD()
-	if !self.S then return end
+	local tr = self:GetOwner():GetEyeTraceNoCursor()
 
 	draw.RoundedBox( 4, 0, 0, 260, 300, self.C[4] )
-	draw.SimpleText( "S: "..tostring(self.S), "DermaDefault", 20, 20, color_white )
+	draw.SimpleText( "HitPos: "..tostring(tr.HitPos), "DermaDefault", 15, 15, color_white )
+
+	if !self.S then return end
+
+	draw.SimpleText( "S: "..tostring(self.S), "DermaDefault", 15, 40, color_white )
 
 	if !self.E then return end
 
-	draw.SimpleText( "E: "..tostring(self.E), "DermaDefault", 20, 35, color_white )
+	draw.SimpleText( "E: "..tostring(self.E), "DermaDefault", 15, 55, color_white )
 
 end
 
