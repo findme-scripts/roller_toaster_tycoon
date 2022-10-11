@@ -175,6 +175,11 @@ DebugMeta.__index = DebugMethods
 
 
 
+
+
+
+
+
 if !IsValid(Debug) then
 	Debug = {}
 	setmetatable(Debug, DebugMeta)
@@ -205,6 +210,6 @@ hook.Add("Think", "test_reference", function()
 	Debug:Position("HitPos", tr.HitPos, {{1, 16, 16, color_white}, {"DermaDefault", 15, 15, color_white}})
 
 	local forward = (tr.HitPos + (tr.HitPos-LocalPlayer():GetPos()):GetNormal()*10)
-	Debug:Direction("Forward", tr.HitPos, tr.HitPos:Angle():Forward(), {{color_black, false}, {"DermaDefault", 15, 15, color_white}})
+	Debug:Direction("Forward", tr.HitPos, forward, {{color_black, false}, {"DermaDefault", 15, 15, color_white}})
 	Debug:Length("Up", tr.HitPos, tr.HitPos + Vector(0, 0, 5), {{Color(255, 80, 80), false}, {"DermaDefault", 15, 15, color_white}})
 end)
