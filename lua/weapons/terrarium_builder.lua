@@ -38,6 +38,7 @@ function SWEP:InitializeVariables()
 	self.Variables = {}
 	self.Variables[1] = 0 --Current Stage
 	self.Variables[2] = nil --Start Position
+	self.Variables[3] = nil --Active Position
 end
 
 function SWEP:Set(index, content)
@@ -49,7 +50,12 @@ function SWEP:Get(index)
 end
 
 function SWEP:RenderContext()
+	local CurrentStage = self:Get(1)
 
+	if CurrentStage == 1 then
+		self:Set(3, self:GetOwner():GetEyeTraceNoCursor().HitPos)
+		Debug:Position("Active", self:Get(3), {{1, 16, 16, color_white}, {"DermaDefault", 15, 15, color_white}})
+	end
 end
 
 function SWEP:PrimaryAttack()
@@ -62,7 +68,8 @@ function SWEP:PrimaryAttack()
 		local StartPos = self:Get(2)
 		if !StartPos then
 			self:Set(2, tr.HitPos)
-			Debug:Position("Start", self:Get(2), {{1, 16, 16, color_white}, {"DermaDefault", 15, 15, color_white}})
+			Debug:Position("Start", self:Get(2), {{1, 16, 16, color_white}, {"DermaDefault", 15, 35, color_white}})
+			self:Set(1, 1) --Set Current Stage to 1
 		end
 
 	end

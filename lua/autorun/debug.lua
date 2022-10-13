@@ -34,6 +34,10 @@ function DebugMethods:InitializeVariables()
 	self.Positions = {}
 end
 
+function DebugMethods:ClearAllPositions()
+	table.Empty(self.Positions)
+end
+
 function DebugMethods:PositionExists(name)
 	for i=1, #self.Positions do
 		if self.Positions[i][1] == name then
@@ -52,6 +56,26 @@ function DebugMethods:GetByValue(name)
 	end
 
 	return nil
+end
+
+function DebugMethods:RenderContext()
+	render.SetColorMaterial()
+
+	for _, v in pairs(self.Positions) do
+		if v[2] && v[3] then
+			render.DrawSphere(v[2], v[3][1], v[3][2], v[3][3], v[3][4])
+			render.DrawLine(v[2], v[2] + v[2]:GetNormal()*v[3][1]*2,  color_black, false)
+		end
+	end
+
+end
+
+function DebugMethods:DrawContext()
+	for _, v in pairs(self.Positions) do
+		if v[4] then
+			draw.SimpleText( tostring(v[1])..": "..tostring(v[2]), v[4][1], v[4][2], v[4][3], v[4][4] )
+		end
+	end
 end
 
 function DebugMethods:Position(name, vec, args) --Debug:Position( name, vector, {{3D_Render_Arguments}, {Draw_Arguments}} )
@@ -89,30 +113,6 @@ function DebugMethods:Position(name, vec, args) --Debug:Position( name, vector, 
 
 	return 
 end
-
-function DebugMethods:ClearAllPositions()
-	table.Empty(self.Positions)
-end
-
-function DebugMethods:RenderContext()
-	render.SetColorMaterial()
-
-	for _, v in pairs(self.Positions) do
-		if v[2] && v[3] then
-			render.DrawSphere(v[2], v[3][1], v[3][2], v[3][3], v[3][4])
-		end
-	end
-
-	PrintTable(self.Positions)
-end
-
-function DebugMethods:DrawContext()
-	for _, v in pairs(self.Positions) do
-		if v[4] then
-			draw.SimpleText( tostring(v[1])..": "..tostring(v[2]), v[4][1], v[4][2], v[4][3], v[4][4] )
-		end
-	end
-end
 DebugMeta.__index = DebugMethods
 
 
@@ -145,10 +145,10 @@ end
 
 
 
-
+--[[
 if !IsValid(LocalPlayer()) then return end
 
 hook.Add("Think", "test_reference", function()
 	local tr = LocalPlayer():GetEyeTraceNoCursor()
 	Debug:Position("HitPos", tr.HitPos, {{1, 16, 16, color_white}, {"DermaDefault", 15, 15, color_white}})
-end)
+end)--]]
