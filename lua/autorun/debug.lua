@@ -1,6 +1,6 @@
 AddCSLuaFile()
-
 if SERVER then return end
+
 
 local DebugMeta = {}
 function DebugMeta:__call()
@@ -150,6 +150,5 @@ if !IsValid(LocalPlayer()) then return end
 
 hook.Add("Think", "test_reference", function()
 	local tr = LocalPlayer():GetEyeTraceNoCursor()
-
---	Debug:Position("HitPos", tr.HitPos, {{1, 16, 16, color_white}, {"DermaDefault", 15, 15, color_white}})
+	Debug:Position("HitPos", tr.HitPos, {{1, 16, 16, color_white}, {"DermaDefault", 15, 15, color_white}})
 end)
