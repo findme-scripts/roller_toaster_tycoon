@@ -78,6 +78,13 @@ function DebugMethods:DrawContext()
 	end
 end
 
+function DebugMethods:RemovePosition(name)
+	if self:PositionExists(name) then
+		local index = self:GetByValue(name)
+		table.remove(self.Positions, index)
+	end
+end
+
 function DebugMethods:Position(name, vec, args) --Debug:Position( name, vector, {{3D_Render_Arguments}, {Draw_Arguments}} )
 
 		local tbl = {}
