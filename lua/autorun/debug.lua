@@ -32,142 +32,84 @@ end
 
 function DebugMethods:InitializeVariables()
 	self.Positions = {}
-	self.Directions = {}
-	self.Lengths = {}
-
-	self.ActiveRenders = {}
-	self.ActiveDrawings = {}
 end
 
-function DebugMethods:Position(key, vec, args) --Debug:Position( name, vector, {{3D_Render_Arguments}, {Draw_Arguments}} )
-	if self.Positions[key] then
-		self.Positions[key][1] = vec
-	else
-		self.Positions[key] = {}
-		self.Positions[key][1] = vec
-
-		if args then
-			if args[1] then --3D Render Arguments
-				self.Positions[key][2] = {}
-
-				self.Positions[key][2][1] = args[1][1] --Radius
-				self.Positions[key][2][2] = args[1][2] --Rows
-				self.Positions[key][2][3] = args[1][3] --Columns
-				self.Positions[key][2][4] = args[1][4] --Color
-
-				self.ActiveRenders[key] = self.Positions[key]
-			end
-
-			if args[2] then --2D HUD Draw Arguments
-				self.Positions[key][3] = {}
-
-				self.Positions[key][3][1] = args[2][1] --Font
-				self.Positions[key][3][2] = args[2][2] --X
-				self.Positions[key][3][3] = args[2][3] --Y
-				self.Positions[key][3][4] = args[2][4] --Color
-
-				self.ActiveDrawings[key] = self.Positions[key]
-			end
+function DebugMethods:PositionExists(name)
+	for i=1, #self.Positions do
+		if self.Positions[i][1] == name then
+			return true
 		end
 	end
 
-	return self.Positions[key]
+	return false
 end
 
-function DebugMethods:Direction(key, vec1, vec2, args) --Debug:Direction( name, vector1, vector2, {{3D_Render_Arguments}, {Draw_Arguments}} )
-	if self.Directions[key] then
-		self.Directions[key][1] = vec1
-		self.Directions[key][2] = vec2
-	else
-		self.Directions[key] = {}
-		self.Directions[key][1] = vec1
-		self.Directions[key][2] = vec2
-
-		if args then
-			if args[1] then --3D Render Arguments
-				self.Directions[key][3] = {}
-
-				self.Directions[key][3][1] = args[1][1] --Color
-				self.Directions[key][3][2] = args[1][2] --DrawZ
-
-				self.ActiveRenders[key] = self.Directions[key]
-			end
-
-			if args[2] then --2D HUD Draw Arguments
-				self.Directions[key][4] = {}
-
-				self.Directions[key][4][1] = args[2][1] --Font
-				self.Directions[key][4][2] = args[2][2] --X
-				self.Directions[key][4][3] = args[2][3] --Y
-				self.Directions[key][4][4] = args[2][4] --Color
-
-				self.ActiveDrawings[key] = self.Directions[key]
-			end
+function DebugMethods:GetByValue(name)
+	for i=1, #self.Positions do
+		if self.Positions[i][1] == name then
+			return i
 		end
 	end
 
-	return self.Directions[key]
+	return nil
 end
 
-function DebugMethods:Length(key, vec1, vec2, args) --Debug:Length( name, vector1, vector2, {{3D_Render_Arguments}, {Draw_Arguments}} )
-	if self.Lengths[key] then
-		self.Lengths[key][1] = vec1
-		self.Lengths[key][2] = vec2
-	else
-		self.Lengths[key] = {}
-		self.Lengths[key][1] = vec1
-		self.Lengths[key][2] = vec2
+function DebugMethods:Position(name, vec, args) --Debug:Position( name, vector, {{3D_Render_Arguments}, {Draw_Arguments}} )
 
+		local tbl = {}
+		tbl[1] = name
+		tbl[2] = vec
+		
 		if args then
 			if args[1] then --3D Render Arguments
-				self.Lengths[key][3] = {}
+				tbl[3] = {}
 
-				self.Lengths[key][3][1] = args[1][1] --Color
-				self.Lengths[key][3][2] = args[1][2] --DrawZ
-
-				self.ActiveRenders[key] = self.Lengths[key]
+				tbl[3][1] = args[1][1] --Sphere Radius
+				tbl[3][2] = args[1][2] --Long Steps
+				tbl[3][3] = args[1][3] --Lat Steps
+				tbl[3][4] = args[1][4] --Color
 			end
 
 			if args[2] then --2D HUD Draw Arguments
-				self.Lengths[key][4] = {}
+				tbl[4] = {}
 
-				self.Lengths[key][4][1] = args[2][1] --Font
-				self.Lengths[key][4][2] = args[2][2] --X
-				self.Lengths[key][4][3] = args[2][3] --Y
-				self.Lengths[key][4][4] = args[2][4] --Color
-
-				self.ActiveDrawings[key] = self.Lengths[key]
+				tbl[4][1] = args[2][1] --Font
+				tbl[4][2] = args[2][2] --X
+				tbl[4][3] = args[2][3] --Y
+				tbl[4][4] = args[2][4] --Color
 			end
 		end
+
+	if !self:PositionExists(name) then
+		table.insert(self.Positions, tbl)
+	else --Existing debug position.
+		local index = self:GetByValue(name)
+		self.Positions[index] = tbl
 	end
 
-	return self.Lengths[key]
+	return 
 end
 
-function DebugMethods:IsValid()
-	return true
+function DebugMethods:ClearAllPositions()
+	table.Empty(self.Positions)
 end
 
 function DebugMethods:RenderContext()
 	render.SetColorMaterial()
 
-	for k, v in pairs(self.ActiveRenders) do
-		if type(v[2]) == "Vector" then --hmmm..
-			render.DrawLine(v[1], v[2], v[3][1], v[3][2])
-		else
-			render.DrawSphere(v[1], v[2][1], v[2][2], v[2][3], v[2][4])
-			render.DrawLine(v[1], v[1]+v[1]:GetNormal()*v[2][1]*2, color_black, false)
-			render.DrawLine(v[1], v[1]+v[1]:GetNormal()*v[2][1]*2, color_black, false)
+	for _, v in pairs(self.Positions) do
+		if v[2] && v[3] then
+			render.DrawSphere(v[2], v[3][1], v[3][2], v[3][3], v[3][4])
 		end
 	end
+
+	PrintTable(self.Positions)
 end
 
 function DebugMethods:DrawContext()
-	for k, v in pairs(self.ActiveDrawings) do
-		if type(v[2]) == "Vector" then --hmmm..
-			draw.SimpleText( tostring(k)..": "..tostring(v[1]), v[4][1], v[4][2], v[4][3], v[4][4] )
-		else
-			draw.SimpleText( tostring(k)..": "..tostring(v[1]), v[3][1], v[3][2], v[3][3], v[3][4] )
+	for _, v in pairs(self.Positions) do
+		if v[4] then
+			draw.SimpleText( tostring(v[1])..": "..tostring(v[2]), v[4][1], v[4][2], v[4][3], v[4][4] )
 		end
 	end
 end
@@ -209,9 +151,5 @@ if !IsValid(LocalPlayer()) then return end
 hook.Add("Think", "test_reference", function()
 	local tr = LocalPlayer():GetEyeTraceNoCursor()
 
-	Debug:Position("HitPos", tr.HitPos, {{1, 16, 16, color_white}, {"DermaDefault", 15, 15, color_white}})
-
-	local forward = (tr.HitPos + (tr.HitPos-LocalPlayer():GetPos()):GetNormal()*10)
-	Debug:Direction("Forward", tr.HitPos, forward, {{color_black, false}, {"DermaDefault", 15, 35, color_white}})
-	Debug:Length("Up", tr.HitPos, tr.HitPos + Vector(0, 0, 5), {{Color(255, 80, 80), false}, {"DermaDefault", 15, 55, color_white}})
+--	Debug:Position("HitPos", tr.HitPos, {{1, 16, 16, color_white}, {"DermaDefault", 15, 15, color_white}})
 end)
