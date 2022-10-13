@@ -42,9 +42,9 @@ SWEP.C =
 
 function SWEP:DebugRender(tr)
 	if !self.ZUnlock then Debug:Position("HitPos", tr.HitPos, {{0.5, 16, 16, color_white}, {"DermaDefault", 15, 15, color_white}}) end
-	if self.S then Debug:Position("S", self.S, {{0.75, 16, 16, color_white}, {"DermaDefault", 15, 45, color_white}}) end
-	if self.E then Debug:Position("E", self.E, {{0.75, 16, 16, color_white}, {"DermaDefault", 15, 65, color_white}}) end
-	if self.M then Debug:Position("M", self.M, {{0.75, 16, 16, color_white}, {"DermaDefault", 15, 85, color_white}}) end
+	if self.S then Debug:Position("S", self.S, {{0.5, 16, 16, color_white}, {"DermaDefault", 15, 45, color_white}}) end
+	if self.E then Debug:Position("E", self.E, {{0.5, 16, 16, color_white}, {"DermaDefault", 15, 65, color_white}}) end
+	if self.M then Debug:Position("M", self.M, {{0.5, 16, 16, color_white}, {"DermaDefault", 15, 85, color_white}}) end
 	if self.Vert then Debug:Position("Opp", self.Vert, {{1, 16, 16, self.C[2]}, {"DermaDefault", 15, 115, color_white}}) end
 end
 

@@ -156,6 +156,7 @@ function DebugMethods:RenderContext()
 			render.DrawLine(v[1], v[2], v[3][1], v[3][2])
 		else
 			render.DrawSphere(v[1], v[2][1], v[2][2], v[2][3], v[2][4])
+			render.DrawLine(v[1], v[1]+v[1]:GetNormal()*v[2][1]*2, color_black, false)
 		end
 	end
 end
