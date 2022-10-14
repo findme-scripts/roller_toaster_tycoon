@@ -172,10 +172,16 @@ function Method:DrawOutline()
 	render.DrawWireframeBox(self:GetPos(), self:GetAngles(), self:GetSize()*-1, self:GetSize(), color_white, false)
 end
 
+function Method:TestRender()
+	self:Rotate(Angle( 0, 1/(1/FrameTime()), 0 ))
+end
+
 function Method:RenderContext()
 	self:DrawAxis()
 	self:DrawGround()
 	self:DrawOutline()
+
+	self:TestRender()
 end
 
 
