@@ -97,7 +97,7 @@ Splines =
 					local ToVec = AllSplinePos[k+1]
 					if k != #AllSplinePos then
 						--render.DrawLine( v, ToVec, Color( 255, 80, 80 ), false )
-						render.DrawBeam( v, ToVec, 2, 0, 1, Color( 255, 80, 80 ))
+						render.DrawBeam( v, ToVec, 1, 0, 1, Color( 60, 60, 60 ))
 					end
 				end
 
