@@ -130,30 +130,27 @@ function Method:SetupVariables()
 
 	self.Hooks = {}
 	self.Hooks[1] = {"PostDrawOpaqueRenderables", "["..SysTime().."]Space Meta - Render Context", self.RenderContext}
-
-	self.CellSize = 1
 end
 
 function Method:SetupHooks()
 	for i=1, #self.Hooks do
-		hook.Add(self.Hooks[i][1], self.Hooks[i][2], function() if IsValid(self) then self.Hooks[i][3]() end end)
+		hook.Add(self.Hooks[i][1], self.Hooks[i][2], function() if IsValid(self) then self.Hooks[i][3](self) end end)
 	end
 end
 
-function Method:CreateMaterials()
+function Method:SetupMaterials()
 	for i=1, #self.Materials do
 		local tex = self.Materials[i]
-		self.Materials[i] = CreateMaterial( tex, "UnlitGeneric", {
+		self.Materials[i] = CreateMaterial( tostring(SysTime()).." "..tex, "UnlitGeneric", {
 		  ["$basetexture"] = tex,
 		  ["$model"] = 1
 		} )
 	end
 end
 
-function Method:Initialize() --Spacial cordinates(Matrix) has been set up.
+function Method:Initialize()
 	self:SetupVariables()
-
-	self:CreateMaterials()
+	self:SetupMaterials()
 	self:SetupHooks()
 end
 
@@ -208,7 +205,7 @@ local function CreateSpace(pl, cmd, arg)
 	local tr = pl:GetEyeTraceNoCursor()
 
 	local space = setmetatable({}, Meta)
-	space(tr.HitPos+Vector(0, 0, 20), Angle(), Vector(16, 16, 16))
+	space(tr.HitPos+Vector(0, 0, 16), Angle(), Vector(16, 16, 16))
 	space:Dump()
 end
 concommand.Add("Space", CreateSpace)
