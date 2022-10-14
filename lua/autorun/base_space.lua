@@ -89,6 +89,10 @@ function Method:Remove()
 	self = nil
 end
 
+function Method:SetupHooks()
+	hook.Add("PostDrawOpaqueRenderables", "Space - Render Context", function() if IsValid(self) then self:RenderContext() end end)
+end
+
 function Method:SetSize(vec)
 	self.Size = vec
 end
@@ -121,26 +125,9 @@ function Method:GetHeight(val)
 	return self.Size.z
 end
 
-
-
-
-
-function Method:SetupVariables()
+function Method:CreateMaterials()
 	self.Materials = {"phoenix_storms/bluemetal", "concrete/concretefloor001a", "hunter/myplastic"}
 
-	self.Hooks = {}
-	self.Hooks[1] = {"PostDrawOpaqueRenderables", "["..SysTime().."]Space Meta - Render Context", self.RenderContext}
-
-	self.CellSize = 1
-end
-
-function Method:SetupHooks()
-	for i=1, #self.Hooks do
-		hook.Add(self.Hooks[i][1], self.Hooks[i][2], function() if IsValid(self) then self.Hooks[i][3]() end end)
-	end
-end
-
-function Method:CreateMaterials()
 	for i=1, #self.Materials do
 		local tex = self.Materials[i]
 		self.Materials[i] = CreateMaterial( tex, "UnlitGeneric", {
@@ -151,24 +138,21 @@ function Method:CreateMaterials()
 end
 
 function Method:Initialize() --Spacial cordinates(Matrix) has been set up.
-	self:SetupVariables()
-
 	self:CreateMaterials()
+
+	self.CellSize = 1
+
 	self:SetupHooks()
-end
-
-
-
-
-
-function Method:DrawAxis()
-	debugoverlay.Axis(self:GetPos(), self:GetAngles(), 6, 1/(1/FrameTime()), false)
 end
 
 function Method:DrawGround()
 	render.SetMaterial(self.Materials[3])
 	local pos, size = self:GetPos(), self:GetSize()
 	render.DrawQuad( pos+Vector(-size.x, -size.y, -size.z), pos+Vector(-size.x, size.y, -size.z), pos+Vector(size.x, size.y, -size.z), pos+Vector(size.x, -size.y, -size.z), color_white)
+end
+
+function Method:DrawAxis()
+	debugoverlay.Axis(self:GetPos(), self:GetAngles(), 6, 1/(1/FrameTime()), false)
 end
 
 function Method:DrawOutline()
@@ -181,10 +165,6 @@ function Method:RenderContext()
 	self:DrawOutline()
 end
 
-
-
-
-
 function Method:Dump()
 	PrintTable(self:ToTable())
 	print("Position: "..tostring(self:GetPos()))
@@ -192,14 +172,8 @@ function Method:Dump()
 	print("Size: "..tostring(self:GetSize()))
 end
 
+
 Meta.__index = Method
-
-
-
-
-
-
-
 
 
 
