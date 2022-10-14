@@ -3,10 +3,11 @@ if SERVER then return end
 if !IsValid(LocalPlayer()) then return end
 
 local Meta = {}
-function Meta:__call(vec, ang)
+function Meta:__call(pos, ang, size)
 	self:CreateBasicMatrix()
-	self:SetPos(vec || Vector())
+	self:SetPos(pos || Vector())
 	self:SetAngles(ang || Angle())
+	self:SetSize(size || Vector())
 	self:Initialize()
 
 	return self
@@ -41,7 +42,7 @@ function Method:SetAngles(ang)
 end
 
 function Method:GetPos()
-	return self:GetTranslation()
+	return self.Matrix:GetTranslation()
 end
 
 function Method:GetAngles()
@@ -80,13 +81,81 @@ function Method:GetMatrixField(row, column)
 	return self.Matrix:GetField(row, column)
 end
 
+function Method:IsValid()
+	return true
+end
+
+function Method:Remove()
+	self = nil
+end
+
+function Method:SetupHooks()
+	hook.Add("PostDrawTranslucentRenderables", "Space - Render Context", function() if IsValid(self) then self:RenderContext() end end)
+end
+
+function Method:CacheMaterials()
+	for i=1, #self.Materials do
+		self.Materials[i] = Material(self.Materials[i])
+	end
+end
+
+function Method:SetSize(vec)
+	self.Size = vec
+end
+
+function Method:GetSize()
+	return self.Size
+end
+
+function Method:SetLength(val)
+	self.Size.y = val
+end
+
+function Method:SetWidth(val)
+	self.Size.x = val
+end
+
+function Method:SetHeight(val)
+	self.Size.z = val
+end
+
+function Method:GetLength(val)
+	return self.Size.y
+end
+
+function Method:GetWidth(val)
+	return self.Size.x
+end
+
+function Method:GetHeight(val)
+	return self.Size.z
+end
+
+function Method:Initialize() --Spacial cordinates(Matrix) has been set up.
+	self.Materials = {"phoenix_storms/bluemetal"}
+	self:CacheMaterials()
+
+	self:SetupHooks()
+
+	self:CreateGround()
+end
+
+function Method:CreateGround()
+	
+end
+
+function Method:RenderContext()
+	
+end
+
 function Method:Dump()
 	PrintTable(self:ToTable())
+	debugoverlay.Axis(self:GetPos(), self:GetAngles(), 6, 10, false)
+	print("Position: "..tostring(self:GetPos()))
+	print("Angles: "..tostring(self:GetAngles()))
+	print("Size: "..tostring(self:GetSize()))
 end
 
-function Method:Initialize()
-
-end
 
 Meta.__index = Method
 
@@ -97,7 +166,7 @@ local function CreateSpace(pl, cmd, arg)
 	local tr = pl:GetEyeTraceNoCursor()
 
 	local space = setmetatable({}, Meta)
-	space(tr.HitPos)
+	space(tr.HitPos, Angle(), Vector(16, 16, 16))
 	space:Dump()
 end
 concommand.Add("Space", CreateSpace)
