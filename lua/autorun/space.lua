@@ -173,7 +173,7 @@ function Method:DrawOutline()
 end
 
 function Method:TestRender()
-	self:Rotate(Angle( 0, 1/(1/FrameTime()), 0 ))
+	--self:Rotate(Angle( 0, 1/(1/FrameTime()), 0 ))
 end
 
 function Method:RenderContext()
