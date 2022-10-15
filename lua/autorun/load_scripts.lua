@@ -9,4 +9,14 @@ local function Load_Scripts()
 	end
 end
 
-Load_Scripts()
+
+
+if SERVER then
+	Load_Scripts()
+end
+
+if CLIENT then
+	hook.Add("InitPostEntity", "Client Ready", function()
+		Load_Scripts()
+	end)
+end
