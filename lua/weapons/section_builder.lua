@@ -26,8 +26,6 @@ if SERVER then return end
 
 
 SWEP.Initialize = function(self)
-	if !Splines then include("autorun/splines.lua") end --am i really dumb or really smart.
-
 	self.Sections = {}
 	self.Corners = {}
 	self.DrawPoints = {}

@@ -36,7 +36,6 @@ SWEP.C =
 
 
 function SWEP:Initialize()
-	if !Splines then include("autorun/splines.lua") end
 	hook.Add("PostDrawOpaqueRenderables", "Spline Viewer - Render Context", function() if !IsValid(self) then return end self:RenderContext() end)
 	concommand.Add("drop", function(pl, cmd, arg) self:Command_Drop(pl, cmd, arg) end)
 end

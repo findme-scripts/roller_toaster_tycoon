@@ -219,12 +219,18 @@ Splines()
 
 
 
-------------TESTING------------
+
+
+
+
+
+
+
+
+
+
+--[[
 if !IsValid(LocalPlayer()) then return end
-
-
-
-
 
 local function New_RoundTrack()
 	local tr = LocalPlayer():GetEyeTraceNoCursor()
@@ -241,9 +247,6 @@ end
 
 New_RoundTrack()
 
-
-
-
 local function CopyLast(pl, cmd, arg)
 	local New_Controls = {}
 	for i=0, 3 do
@@ -259,11 +262,8 @@ local function CopyLast(pl, cmd, arg)
 end
 concommand.Add("copy_track", CopyLast)
 
-
 local function ToggleRide(pl, cmd, arg)
 	pl.PUTMEONTHERIDE = !pl.PUTMEONTHERIDE
 end
 concommand.Add("ToggleRide", ToggleRide)
-
-----------END TESTING----------
-
+--]]

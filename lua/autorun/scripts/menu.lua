@@ -1,72 +1,4 @@
 AddCSLuaFile()
-
-local function GoTo_ControlPoint(pl, cmd, arg)
-	if !arg[1] then return end
-
-	local Player_Pos = pl:GetShootPos()
-	local ControlPoint_Pos = Vector(tonumber(arg[1]), tonumber(arg[2]), tonumber(arg[3]))
-
-	local Ang = (ControlPoint_Pos-Player_Pos):Angle()
-
-	pl:SetEyeAngles(Ang)
-end
-concommand.Add("GoTo_ControlPoint", GoTo_ControlPoint)
-
-
-
-
-
-local s = SysTime()
-for i=1, 1000 do
-	LerpVector(0.5, Vector(100000, 100000, 100000), Vector(-100000, -100000, -100000))
-	LerpVector(0.5, Vector(100000, 100000, 100000), Vector(-100000, -100000, -100000))
-	LerpVector(0.5, Vector(100000, 100000, 100000), Vector(-100000, -100000, -100000))
-	LerpVector(0.5, Vector(100000, 100000, 100000), Vector(-100000, -100000, -100000))
-	LerpVector(0.5, Vector(100000, 100000, 100000), Vector(-100000, -100000, -100000))
-end
-local e = SysTime()
-print(e-s)
-
-
-
-
-
-local s = SysTime()
-for i=1, 1000 do
-
-		local n = 2
-		local t = 0.5
-
-		local function N_Factorial(n)
-			local sum = n
-			for i=1, n-1 do
-				sum = sum*(n-i)
-			end
-			return sum
-		end
-
-		local tbl = {Vector(100000, 100000, 100000), Vector(-100000, -100000, -100000), Vector(-100000, -100000, 100000)}
-		local WeightedSum = Vector()
-		for i=0, n do --(Bernstein-Bezier Form)
-			local Fraction = N_Factorial(n) / ( N_Factorial(i) * N_Factorial(n-i) )
-			if Fraction == math.huge then Fraction = 1 end
-			local weight = Fraction * math.pow(t, i) * math.pow( 1-t, (n-i) )
-
-			WeightedSum = WeightedSum + (tbl[i+1] * weight)
-		end
-		--print(WeightedSum)
-
-end
-local e = SysTime()
-print("m "..e-s)
-
-
-
-
-
-
-
-
 if SERVER then return end
 
 local function BuildSplineViewer()
@@ -244,7 +176,7 @@ end
 
 
 local function Command_ToggleMenu(pl, cmd, arg)
-	if !SplineViewer then BuildSplineViewer() end
+	if !SplineViewer then BuildSplineViewer() return end
 
 	if SplineViewer:IsVisible() then
 		SplineViewer:Remove()
@@ -253,3 +185,21 @@ local function Command_ToggleMenu(pl, cmd, arg)
 	end
 end
 concommand.Add("ToggleMenu", Command_ToggleMenu)
+
+
+
+
+
+
+--[[
+local function GoTo_ControlPoint(pl, cmd, arg)
+	if !arg[1] then return end
+
+	local Player_Pos = pl:GetShootPos()
+	local ControlPoint_Pos = Vector(tonumber(arg[1]), tonumber(arg[2]), tonumber(arg[3]))
+
+	local Ang = (ControlPoint_Pos-Player_Pos):Angle()
+
+	pl:SetEyeAngles(Ang)
+end
+concommand.Add("GoTo_ControlPoint", GoTo_ControlPoint)--]]

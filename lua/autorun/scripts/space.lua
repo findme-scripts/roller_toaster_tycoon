@@ -124,7 +124,6 @@ end
 
 
 
-
 function Method:SetupVariables()
 	self.Materials = {"phoenix_storms/bluemetal", "concrete/concretefloor001a", "hunter/myplastic"}
 
@@ -153,7 +152,6 @@ function Method:Initialize()
 	self:SetupMaterials()
 	self:SetupHooks()
 end
-
 
 
 
@@ -187,7 +185,6 @@ end
 
 
 
-
 function Method:Dump()
 	PrintTable(self:ToTable())
 	print("Position: "..tostring(self:GetPos()))
@@ -196,6 +193,7 @@ function Method:Dump()
 end
 
 Meta.__index = Method
+
 
 
 
